@@ -1,6 +1,7 @@
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
@@ -22,11 +23,7 @@ public class WeatherDataImportService {
         WebClient webClient = WebClient.create();
 
         // Send a GET request to the weather portal's API and retrieve the XML response
-        String xmlResponse = webClient.get()
-                .uri(apiUrl)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+        String xmlResponse = webClient.get().uri(apiUrl).retrieve().bodyToMono(String.class).block();
 
         // Parse the XML response using JAXB
         try {
@@ -37,7 +34,7 @@ public class WeatherDataImportService {
             // Access the list of stations and process them as needed
             List<Station> stations = observations.getStations();
             for (Station station : stations) {
-                // Extract the required data fields
+                // Extract the required data fields from xml
                 String stationName = station.getName();
                 String wmoCode = station.getWmocode();
                 Double airTemperature = station.getAirtemperature();
@@ -45,7 +42,7 @@ public class WeatherDataImportService {
                 String phenomenon = station.getPhenomenon();
                 Long timestamp = station.getTimestamp();
 
-                // Create a new instance of WeatherData and populate it with the extracted data
+                // Create a new instance of WeatherData and set its parameters according to extracted data from xml
                 WeatherData weatherData = new WeatherData();
                 weatherData.setStationName(stationName);
                 weatherData.setWmoCode(wmoCode);
@@ -54,8 +51,11 @@ public class WeatherDataImportService {
                 weatherData.setWeatherPhenomenon(phenomenon);
                 weatherData.setTimestamp(new Timestamp(timestamp));
 
-                // Save the WeatherData object into the database
-                weatherDataRepository.save(weatherData);
+                //insert to database
+                // We only want to put WeatherData instance to database, if the station is Tallinn, Tartu or Pärnu
+                if (stationName.equals("Tallinn-Harku") || stationName.equals("Tartu-Tõravere") || stationName.equals("Pärnu")) {
+                    weatherDataRepository.save(weatherData);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace(); // Handle parsing or database insertion errors
