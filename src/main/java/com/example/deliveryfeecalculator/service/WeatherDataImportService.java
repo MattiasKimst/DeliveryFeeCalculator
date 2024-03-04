@@ -1,6 +1,12 @@
+import com.example.deliveryfeecalculator.model.Station;
+import com.example.deliveryfeecalculator.model.WeatherData;
+import com.example.deliveryfeecalculator.model.Observations;
+import com.example.deliveryfeecalculator.repository.WeatherDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;

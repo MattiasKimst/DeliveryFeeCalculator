@@ -1,3 +1,7 @@
+package com.example.deliveryfeecalculator.service;
+
+import com.example.deliveryfeecalculator.model.WeatherData;
+import com.example.deliveryfeecalculator.repository.WeatherDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

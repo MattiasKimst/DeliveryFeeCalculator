@@ -1,3 +1,10 @@
+package com.example.deliveryfeecalculator.model;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+
 import javax.xml.bind.annotation.*;
 
 @XmlRootElement(name = "station")

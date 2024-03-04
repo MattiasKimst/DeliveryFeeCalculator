@@ -1,9 +1,10 @@
 package com.example.deliveryfeecalculator.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+
 import java.security.Timestamp;
 
 
@@ -77,6 +78,10 @@ public class WeatherData {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setTimestamp(java.sql.Timestamp timestamp) {
+
     }
 }
 
