@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 
 import java.security.Timestamp;
+import java.time.LocalDateTime;
 
 
 //Entity classes represent the objects that will be stored in the database
@@ -22,7 +23,8 @@ public class WeatherData {
     private double airTemperature;
     private double windSpeed;
     private String weatherPhenomenon;
-    private Timestamp timestamp;
+    //timestamp is not the one from xml but the time when data was fetches from Ilmateenistus endpoint
+    private LocalDateTime timestamp;
 
     public Long getId() {
         return id;
@@ -72,15 +74,12 @@ public class WeatherData {
         this.weatherPhenomenon = weatherPhenomenon;
     }
 
-    public Timestamp getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public void setTimestamp(java.sql.Timestamp timestamp) {
+    public void setTimestamp() {
+        timestamp=LocalDateTime.now();
 
     }
 }

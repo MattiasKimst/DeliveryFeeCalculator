@@ -1,3 +1,5 @@
+package com.example.deliveryfeecalculator.service;
+
 import com.example.deliveryfeecalculator.model.Station;
 import com.example.deliveryfeecalculator.model.WeatherData;
 import com.example.deliveryfeecalculator.model.Observations;
@@ -55,7 +57,7 @@ public class WeatherDataImportService {
                 weatherData.setAirTemperature(airTemperature);
                 weatherData.setWindSpeed(windSpeed);
                 weatherData.setWeatherPhenomenon(phenomenon);
-                weatherData.setTimestamp(new Timestamp(timestamp));
+                weatherData.setTimestamp();
 
                 //insert to database
                 // We only want to put WeatherData instance to database, if the station is Tallinn, Tartu or Pärnu
