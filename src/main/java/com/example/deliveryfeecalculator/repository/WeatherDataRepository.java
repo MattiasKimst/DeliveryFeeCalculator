@@ -14,6 +14,6 @@ import org.springframework.stereotype.Repository;
 public interface WeatherDataRepository extends JpaRepository<WeatherData, Long> {
 
     //for calculating fees we need to find the latest data for the specified location
-    @Query("SELECT wd FROM WeatherData wd WHERE wd.stationName = :city ORDER BY wd.timestamp DESC")
+    @Query("SELECT wd FROM WeatherData wd WHERE wd.stationName = :stationName ORDER BY wd.timestamp DESC")
     WeatherData findLatestByStationName(@Param("stationName") String stationName);
 }
