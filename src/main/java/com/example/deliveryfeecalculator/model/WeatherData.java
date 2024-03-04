@@ -23,6 +23,60 @@ public class WeatherData {
     private String weatherPhenomenon;
     private Timestamp timestamp;
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getStationName() {
+        return stationName;
+    }
+
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
+    }
+
+    public String getWmoCode() {
+        return wmoCode;
+    }
+
+    public void setWmoCode(String wmoCode) {
+        this.wmoCode = wmoCode;
+    }
+
+    public double getAirTemperature() {
+        return airTemperature;
+    }
+
+    public void setAirTemperature(double airTemperature) {
+        this.airTemperature = airTemperature;
+    }
+
+    public double getWindSpeed() {
+        return windSpeed;
+    }
+
+    public void setWindSpeed(double windSpeed) {
+        this.windSpeed = windSpeed;
+    }
+
+    public String getWeatherPhenomenon() {
+        return weatherPhenomenon;
+    }
+
+    public void setWeatherPhenomenon(String weatherPhenomenon) {
+        this.weatherPhenomenon = weatherPhenomenon;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
 }
 
