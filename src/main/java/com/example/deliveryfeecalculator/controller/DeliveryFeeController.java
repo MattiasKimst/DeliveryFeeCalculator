@@ -16,11 +16,11 @@ public class DeliveryFeeController {
     //getMapping specifies that it handles GET requests to the /calculateDeliveryFee endpoint.
     @GetMapping("/calculateDeliveryFee")
     public ApiResponse<Double> calculateDeliveryFee(
-            @RequestParam String city,
+            @RequestParam String stationName,
             @RequestParam String vehicleType
     ) {
         try { //call the calculateDeliveryFee method to calculate the delivery fee.
-            double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee(city, vehicleType);
+            double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee(stationName, vehicleType);
             //successfull calculation
             return new ApiResponse<>(true, "Delivery fee calculated successfully", deliveryFee);
         }//invalid input or weatherconditions

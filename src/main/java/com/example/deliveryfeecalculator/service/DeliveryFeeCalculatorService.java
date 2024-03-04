@@ -12,20 +12,28 @@ public class DeliveryFeeCalculatorService {
     private WeatherDataRepository weatherDataRepository;
 
     public double calculateDeliveryFee(String city, String vehicleType) {
-        // Retrieve weather data for the given city from the database
-        WeatherData weatherData = weatherDataRepository.findLatestByCity(city);
+        // Retrieve latest entry for weather data of the given city from the database
 
-        double baseFee = calculateRegionalBaseFee(city, vehicleType);
+        //The city names differ from station names that we use in db, to make a query we need to map cities to station names
+        String stationName = switch (city) {
+            case "Tallinn" -> "Tallinn-Harku";
+            case "Tartu" -> "Tartu-Tõravere";
+            case "Pärnu" -> "Pärnu";
+            default -> city;
+        };
+
+        //collect latest data of the station from Ilmateenistus
+        WeatherData weatherData = weatherDataRepository.findLatestByStationName(stationName);
+
+        double baseFee = calculateBaseFee(city, vehicleType);
         double extraFee = calculateExtraFees(weatherData, vehicleType);
 
-        //Logic to calculate deliveryfee
-        double deliveryFee = 0.0;
-        // Implement business rules...
 
-        return deliveryFee;
+        //deliveryfee is the sum of basefee and extrafee
+        return baseFee + extraFee;
     }
 
-    private double calculateRegionalBaseFee(String city, String vehicleType) {
+    private double calculateBaseFee(String city, String vehicleType) {
         // Implementation of business rules for calculateing the regional base fee
         switch (city) {
             case "Tallinn":
@@ -91,9 +99,7 @@ public class DeliveryFeeCalculatorService {
                     extraFee += 1.0;
                 } else if ("rain".equalsIgnoreCase(weatherPhenomenon)) {
                     extraFee += 0.5;
-                } else if ("glaze".equalsIgnoreCase(weatherPhenomenon) ||
-                        "hail".equalsIgnoreCase(weatherPhenomenon) ||
-                        "thunder".equalsIgnoreCase(weatherPhenomenon)) {
+                } else if ("glaze".equalsIgnoreCase(weatherPhenomenon) || "hail".equalsIgnoreCase(weatherPhenomenon) || "thunder".equalsIgnoreCase(weatherPhenomenon)) {
                     // Error message: "Usage of selected vehicle type is forbidden"
                     throw new IllegalArgumentException("Usage of selected vehicle type is forbidden");
                 }
