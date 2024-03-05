@@ -25,6 +25,7 @@ public class DeliveryFeeCalculatorService {
         //collect latest data of the station from Ilmateenistus
         WeatherData weatherData = weatherDataRepository.findLatestByStationName(stationName);
 
+
         double baseFee = calculateBaseFee(city, vehicleType);
         double extraFee = calculateExtraFees(weatherData, vehicleType);
 

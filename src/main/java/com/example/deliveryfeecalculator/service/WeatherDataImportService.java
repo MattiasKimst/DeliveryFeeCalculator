@@ -22,7 +22,7 @@ public class WeatherDataImportService {
     @Autowired
     private WeatherDataRepository weatherDataRepository;
 
-    @Scheduled(cron = "0 15 * * * *") // Cron expression: run every hour, 15 minutes after the hour
+    @Scheduled(cron = "0 1 * * * *") // Cron expression: run every hour, 15 minutes after the hour
     public void importWeatherData() {
         // URL to Ilmateenistus API endpoint
         String apiUrl = "https://www.ilmateenistus.ee/ilma_andmed/xml/observations.php";
@@ -48,7 +48,7 @@ public class WeatherDataImportService {
                 Double airTemperature = station.getAirtemperature();
                 Double windSpeed = station.getWindspeed();
                 String phenomenon = station.getPhenomenon();
-                Long timestamp = station.getTimestamp();
+
 
                 // Create a new instance of WeatherData and set its parameters according to extracted data from xml
                 WeatherData weatherData = new WeatherData();

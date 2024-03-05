@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 public class WeatherData {
 
     //weather data table in database
+
+    //we generate new unique id for every set of weatherData we fetch as we could fetch the same data multiple times
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -1,18 +1,60 @@
-<!DOCTYPE HTML>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Your first Spring application</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Fee Calculator</title>
 </head>
 <body>
-<p><a href="/hello">Greet the world!</a></p>
+<h1>Delivery Fee Calculator</h1>
+<form id="deliveryForm">
+    <label for="city">City:</label>
+    <input type="text" id="city" name="city" required>
+    <br><br>
+    <label for="vehicleType">Vehicle Type:</label>
+    <select id="vehicleType" name="vehicleType" required>
+        <option value="Car">Car</option>
+        <option value="Scooter">Motorcycle</option>
+        <option value="Bike">Bicycle</option>
+    </select>
+    <br><br>
+    <button type="submit">Calculate</button>
+</form>
 
-<ifm action="/hello" method="GET" id="nameForm">
-    <div>
-        <label for="nameField">How should the app call you?</label>
-        <input name="myName" id="nameField">
-        <button>Greet me!</button>
-    </div>
-</ifm>
+<!-- Result will be displayed here -->
+<div id="result"></div>
+
+<script>
+    // Function to handle form submission
+    document.getElementById('deliveryForm').addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the form from submitting
+
+        // Get the values from the form
+        var city = document.getElementById('city').value;
+        var vehicleType = document.getElementById('vehicleType').value;
+
+        //call the function that makes a request to api endpont with data submitted using the form above, shows response
+        calculateDeliveryFee(city, vehicleType);
+
+        // Display the result
+        document.getElementById('result').innerText = 'Delivery fee for ' + vehicleType + ' in ' + city + ': ' + deliveryFee;
+    });
+
+    // Function to calculate delivery fee (replace with your actual calculation logic)
+    function calculateDeliveryFee(city, vehicleType) {
+        var url = 'http://localhost:8080/calculateDeliveryFee?stationName=' + encodeURIComponent(city) + '&vehicleType=' + encodeURIComponent(vehicleType);
+
+        // Make an AJAX request to the API endpoint
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                // Display the result
+                document.getElementById('result').innerText = 'Request was ' + url + ' Response was ' + data;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
 </body>
 </html>
