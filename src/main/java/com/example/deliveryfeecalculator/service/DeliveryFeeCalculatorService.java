@@ -42,11 +42,12 @@ public class DeliveryFeeCalculatorService {
         double baseFee = calculateBaseFee(city, vehicleType);
         logger.info("calculated basefee: " + baseFee);
         double extraFee = calculateExtraFees(weatherData, vehicleType);
-        //logger.info("extrafee calculated: "+extraFee);
+        logger.info("extrafee calculated: "+extraFee);
+
 
 
         //deliveryfee is the sum of basefee and extrafee
-        return baseFee + extraFee;
+        return (baseFee + extraFee);
     }
 
     private double calculateBaseFee(String city, String vehicleType) {
@@ -93,6 +94,7 @@ public class DeliveryFeeCalculatorService {
         if (("Scooter".equals(vehicleType) || "Bike".equals(vehicleType)) && weatherData != null) {
             // Calculate extra fee based on air temperature (ATEF)
             double airTemperature = weatherData.getAirTemperature();
+            logger.info("Airtemoerature: "+ airTemperature);
             if (airTemperature < -10) {
                 extraFee += 1.0;
             } else if (airTemperature >= -10 && airTemperature < 0) {
