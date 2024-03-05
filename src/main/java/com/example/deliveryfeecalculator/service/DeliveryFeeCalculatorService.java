@@ -1,6 +1,5 @@
 package com.example.deliveryfeecalculator.service;
 
-import com.example.deliveryfeecalculator.DeliveryFeeCalculatorApplication;
 import com.example.deliveryfeecalculator.model.WeatherData;
 import com.example.deliveryfeecalculator.repository.WeatherDataRepository;
 import org.slf4j.Logger;
@@ -20,7 +19,6 @@ public class DeliveryFeeCalculatorService {
     public double calculateDeliveryFee(String city, String vehicleType) {
 
 
-        logger.info("calculateDeliveryFee successfully called");
 
         // Retrieve latest entry for weather data of the given city from the database
 
@@ -32,18 +30,17 @@ public class DeliveryFeeCalculatorService {
             default -> city;
         };
 
+
         //collect latest data of the station from Ilmateenistus
+        logger.info("trying to fetch latest weatherData from db");
         WeatherData weatherData = weatherDataRepository.findLatestByStationName(stationName);
-        logger.info("latest weather data fetched from db with timestamp"+weatherData.getTimestamp());
-
-
+        logger.info("latest weather data fetched from db with timestamp: " + weatherData.getTimestamp());
 
 
         double baseFee = calculateBaseFee(city, vehicleType);
         logger.info("calculated basefee: " + baseFee);
         double extraFee = calculateExtraFees(weatherData, vehicleType);
-        logger.info("extrafee calculated: "+extraFee);
-
+        logger.info("extrafee calculated: " + extraFee);
 
 
         //deliveryfee is the sum of basefee and extrafee
@@ -88,13 +85,13 @@ public class DeliveryFeeCalculatorService {
     }
 
     private double calculateExtraFees(WeatherData weatherData, String vehicleType) {
-        // Implementation of business rules for calculateing extra fees based on weather conditions
+        // Implementation of business rules for calculating extra fees based on weather conditions
         double extraFee = 0.0;
 
         if (("Scooter".equals(vehicleType) || "Bike".equals(vehicleType)) && weatherData != null) {
             // Calculate extra fee based on air temperature (ATEF)
             double airTemperature = weatherData.getAirTemperature();
-            logger.info("Airtemoerature: "+ airTemperature);
+            logger.info("Airtemoerature: " + airTemperature);
             if (airTemperature < -10) {
                 extraFee += 1.0;
             } else if (airTemperature >= -10 && airTemperature < 0) {

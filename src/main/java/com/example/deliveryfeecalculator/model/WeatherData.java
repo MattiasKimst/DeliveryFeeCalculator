@@ -5,7 +5,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 
-import java.security.Timestamp;
 import java.time.LocalDateTime;
 
 
@@ -19,7 +18,6 @@ public class WeatherData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String stationName;
     private String wmoCode;
     private double airTemperature;
@@ -27,6 +25,7 @@ public class WeatherData {
     private String weatherPhenomenon;
     //timestamp is not the one from xml but the time when data was fetches from Ilmateenistus endpoint
     private LocalDateTime timestamp;
+
 
     public Long getId() {
         return id;
@@ -40,12 +39,16 @@ public class WeatherData {
         return stationName;
     }
 
-    public void setStationName(String stationName) {
-        this.stationName = stationName;
-    }
-
     public String getWmoCode() {
         return wmoCode;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setStationName(String stationName) {
+        this.stationName = stationName;
     }
 
     public void setWmoCode(String wmoCode) {
@@ -81,7 +84,7 @@ public class WeatherData {
     }
 
     public void setTimestamp() {
-        timestamp=LocalDateTime.now();
+        timestamp = LocalDateTime.now();
 
     }
 }

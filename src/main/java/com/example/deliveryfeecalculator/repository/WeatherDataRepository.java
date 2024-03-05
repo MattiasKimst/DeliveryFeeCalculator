@@ -10,13 +10,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.logging.Logger;
 
 @Repository
 public interface WeatherDataRepository extends JpaRepository<WeatherData, Long> {
 
 
-    //for calculating fees we need to find the latest data for the specified location
-    @Query("SELECT wd FROM WeatherData wd WHERE wd.stationName = :stationName ORDER BY wd.timestamp DESC")
+    //get weather data for specified station that has the newest timestamp
+    @Query("SELECT wd FROM WeatherData wd WHERE wd.timestamp = (SELECT MAX(wd2.timestamp) FROM WeatherData wd2 WHERE wd2.stationName = :stationName)")
     WeatherData findLatestByStationName(@Param("stationName") String stationName);
+
 }
