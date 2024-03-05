@@ -8,11 +8,11 @@ import jakarta.persistence.GeneratedValue;
 import java.time.LocalDateTime;
 
 
-//Entity classes represent the objects that will be stored in the database
+//Entity class, represents the objects that will be stored in the database
+//in this case the class represents weather data table in h2 database
+
 @Entity
 public class WeatherData {
-
-    //weather data table in database
 
     //we generate new unique id for every set of weatherData we fetch as we could fetch the same data multiple times
     @Id

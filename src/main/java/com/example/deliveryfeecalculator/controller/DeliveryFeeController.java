@@ -16,7 +16,15 @@ public class DeliveryFeeController {
     @Autowired
     private DeliveryFeeCalculatorService deliveryFeeCalculatorService;
 
-    //getMapping specifies that it handles GET requests to the /calculateDeliveryFee endpoint.
+
+    /**
+     GET requests to the /calculateDeliveryFee
+     Calculates the delivery fee for a given station(city) and vehicle type.
+     @param stationName The name of the station for delivery.
+     @param vehicleType The type of vehicle used for delivery.
+     @return An ApiResponse containing the calculated delivery fee if successful,
+     with a success message, or an error if response is unsuccessful.
+     */
     @GetMapping("/calculateDeliveryFee")
     public ApiResponse<Double> calculateDeliveryFee(@RequestParam String stationName, @RequestParam String vehicleType) {
         logger.info("calculateDeliveryFee call received");

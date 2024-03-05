@@ -16,11 +16,15 @@ public class DeliveryFeeCalculatorService {
     @Autowired
     private WeatherDataRepository weatherDataRepository;
 
+
+    /**
+     Calculates the delivery fee based on the given city and vehicle type.
+     @param city The name of the city for delivery.
+     @param vehicleType The type of vehicle used for delivery.
+     @return The calculated delivery fee.
+     */
+
     public double calculateDeliveryFee(String city, String vehicleType) {
-
-
-
-        // Retrieve latest entry for weather data of the given city from the database
 
         //The city names differ from station names that we use in db, to make a query we need to map cities to station names
         String stationName = switch (city) {
@@ -31,26 +35,38 @@ public class DeliveryFeeCalculatorService {
         };
 
 
-        //collect latest data of the station from Ilmateenistus
+        //fetch latest data of the station from database
         logger.info("trying to fetch latest weatherData from db");
         WeatherData weatherData = weatherDataRepository.findLatestByStationName(stationName);
         logger.info("latest weather data fetched from db with timestamp: " + weatherData.getTimestamp());
 
 
+        //calculate base fee
         double baseFee = calculateBaseFee(city, vehicleType);
-        logger.info("calculated basefee: " + baseFee);
-        double extraFee = calculateExtraFees(weatherData, vehicleType);
-        logger.info("extrafee calculated: " + extraFee);
+        logger.info("calculated base fee: " + baseFee);
+
+        //calculate extra fee
+        double extraFees = calculateExtraFees(weatherData, vehicleType);
+        logger.info("calculated extra fees: " + extraFees);
 
 
-        //deliveryfee is the sum of basefee and extrafee
-        return (baseFee + extraFee);
+        // return delivery fee, which is the sum of base fee and extra fee
+        return (baseFee + extraFees);
     }
 
+
+
+
+    /**
+     * Calculates the base delivery fee based on the given city and vehicle type
+     * according to the defined business rules
+     * @param city        The name of the city for delivery.
+     * @param vehicleType The type of vehicle used for delivery.
+     * @return The calculated base delivery fee.
+     */
     private double calculateBaseFee(String city, String vehicleType) {
 
-
-        // Implementation of business rules for calculateing the regional base fee
+        // Business rules to calculate regional base fee (RBF):
         switch (city) {
             case "Tallinn":
                 switch (vehicleType) {
@@ -84,40 +100,70 @@ public class DeliveryFeeCalculatorService {
         }
     }
 
+
+    /**
+     * Calculates the extra delivery fees based on the given weather data and vehicle type
+     * according to the defined business rules
+     * @param weatherData The weather data used for calculating extra fees.
+     * @param vehicleType The type of vehicle used for delivery.
+     * @return The calculated extra delivery fees.
+     * @throws IllegalArgumentException if the vehicle type usage is forbidden based on weather conditions.
+     */
     private double calculateExtraFees(WeatherData weatherData, String vehicleType) {
-        // Implementation of business rules for calculating extra fees based on weather conditions
+
+        //we will increase extraFee by each fulfilled condition defined in business rules
         double extraFee = 0.0;
 
         if (("Scooter".equals(vehicleType) || "Bike".equals(vehicleType)) && weatherData != null) {
-            // Calculate extra fee based on air temperature (ATEF)
+
+            // Extra fee based on air temperature (ATEF) in a specific city is paid in case Vehicle type =
+            //Scooter or Bike
             double airTemperature = weatherData.getAirTemperature();
-            logger.info("Airtemoerature: " + airTemperature);
+            logger.info("Airtemperature: " + airTemperature);
+            //Air temperature is less than -10̊ C, then ATEF = 1 €
             if (airTemperature < -10) {
                 extraFee += 1.0;
-            } else if (airTemperature >= -10 && airTemperature < 0) {
+            }
+            //Air temperature is between -10̊ C and 0̊ C, then ATEF = 0,5 €
+            else if (airTemperature >= -10 && airTemperature < 0) {
                 extraFee += 0.5;
             }
 
-            // Calculate extra fee based on wind speed (WSEF)
+
+
+            // Extra fee based on wind speed (WSEF) in a specific city is paid in case Vehicle type = Bike
             double windSpeed = weatherData.getWindSpeed();
+            logger.info("Wind speed "+windSpeed);
             if ("Bike".equals(vehicleType)) {
+                //Wind speed is between 10 m/s and 20 m/s, then WSEF = 0,5 €
                 if (windSpeed >= 10 && windSpeed <= 20) {
                     extraFee += 0.5;
-                } else if (windSpeed > 20) {
-                    // Error message: "Usage of selected vehicle type is forbidden"
+                }
+                //In case of wind speed is greater than 20 m/s, then the error message “Usage of selected vehicle
+                //type is forbidden” has to be given
+                else if (windSpeed > 20) {
                     throw new IllegalArgumentException("Usage of selected vehicle type is forbidden");
                 }
             }
 
-            // Calculate extra fee based on weather phenomenon (WPEF)
+
+
+            // Extra fee based on weather phenomenon (WPEF) in a specific city is paid in case Vehicle
+            //type = Scooter or Bike
             String weatherPhenomenon = weatherData.getWeatherPhenomenon();
+            logger.info("Weather phenomenon "+ weatherPhenomenon);
             if ("Scooter".equals(vehicleType) || "Bike".equals(vehicleType)) {
+                //Weather phenomenon is related to snow or sleet, then WPEF = 1 €
                 if ("snow".equalsIgnoreCase(weatherPhenomenon) || "sleet".equalsIgnoreCase(weatherPhenomenon)) {
                     extraFee += 1.0;
-                } else if ("rain".equalsIgnoreCase(weatherPhenomenon)) {
+                }
+                //Weather phenomenon is related to rain, then WPEF = 0,5 €
+                else if ("rain".equalsIgnoreCase(weatherPhenomenon)) {
                     extraFee += 0.5;
-                } else if ("glaze".equalsIgnoreCase(weatherPhenomenon) || "hail".equalsIgnoreCase(weatherPhenomenon) || "thunder".equalsIgnoreCase(weatherPhenomenon)) {
-                    // Error message: "Usage of selected vehicle type is forbidden"
+                }
+                //In case the weather phenomenon is glaze, hail, or thunder, then the error message “Usage of
+                //selected vehicle type is forbidden” has to be given
+                else if ("glaze".equalsIgnoreCase(weatherPhenomenon) || "hail".equalsIgnoreCase(weatherPhenomenon) || "thunder".equalsIgnoreCase(weatherPhenomenon)) {
                     throw new IllegalArgumentException("Usage of selected vehicle type is forbidden");
                 }
             }

@@ -2,8 +2,6 @@ package com.example.deliveryfeecalculator;
 
 import com.example.deliveryfeecalculator.service.WeatherDataImportService;
 import jakarta.annotation.PostConstruct;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,7 +19,7 @@ public class DeliveryFeeCalculatorApplication {
         SpringApplication.run(DeliveryFeeCalculatorApplication.class, args);
     }
 
-    // annotation to trigger the import process when the application context is initialized.
+    //PostConstruct annotation is to trigger the import process when the application context is initialized.
     @PostConstruct
     @Scheduled(cron = "1 * * * * *") // later change to 15 minutes!!!
     public void importWeatherDataOnStartup() {

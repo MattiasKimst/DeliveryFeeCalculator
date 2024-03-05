@@ -12,7 +12,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
@@ -26,22 +25,31 @@ public class WeatherDataImportService {
     @Autowired
     private WeatherDataRepository weatherDataRepository;
 
+
+    /**
+     * Imports weather data from the Ilmateenistus API.
+     * Retrieves XML response from the API endpoint, parses it using DOM,
+     * and inserts relevant weather data into the database.
+     * @throws Exception if parsing or database insertion fails.
+     */
     public void importWeatherData() {
 
         // URL to Ilmateenistus API endpoint
         String apiUrl = "https://www.ilmateenistus.ee/ilma_andmed/xml/observations.php";
 
+
         // instance of WebClient to make HTTP requests
         WebClient webClient = WebClient.create();
         logger.info("Webclient created");
+
 
         // Send a GET request to the weather portal's API and retrieve the XML response
         String xmlResponse = webClient.get().uri(apiUrl).retrieve().bodyToMono(String.class).block();
         logger.info("xmlResponse received");
 
 
-        logger.info("trying to parse xml");
         // Parse the XML response using DOM
+        logger.info("Trying to parse xml");
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -50,16 +58,19 @@ public class WeatherDataImportService {
             // Access the root element of the document
             Element root = document.getDocumentElement();
 
-            // Access the list of 'station' elements
+            // Access the list of station elements
             NodeList stationList = root.getElementsByTagName("station");
 
-            // Process each 'station' element
+            // Process each station element
             for (int i = 0; i < stationList.getLength(); i++) {
+
                 Element stationElement = (Element) stationList.item(i);
 
                 // Extract data fields from the 'station' element
                 String stationName = stationElement.getElementsByTagName("name").item(0).getTextContent();
+
                 //we are only interested in weather stations in Tallinn, Tartu or Pärnu
+                //if we begin to extract any other station's data we cancel it to avoid unnecessary work
                 if (!(stationName.equals("Tallinn-Harku") || stationName.equals("Tartu-Tõravere") || stationName.equals("Pärnu"))) {
                     continue;
                 }
@@ -68,6 +79,7 @@ public class WeatherDataImportService {
                 double windSpeed = Double.parseDouble(stationElement.getElementsByTagName("windspeed").item(0).getTextContent());
                 String phenomenon = stationElement.getElementsByTagName("phenomenon").item(0).getTextContent();
                 logger.info("Parsed info: " + stationName + ", " + wmoCode + ", " + airTemperature + ", " + windSpeed + ", " + phenomenon);
+
 
                 // Create a new instance of WeatherData and set its parameters
                 WeatherData weatherData = new WeatherData();
@@ -79,14 +91,13 @@ public class WeatherDataImportService {
                 weatherData.setTimestamp();
 
                 // Insert weather data into the database if necessary
-
                 weatherDataRepository.save(weatherData);
 
-                logger.info("Parsing xml successful, saved to db");
+                logger.info("Parsing xml successful, saved to database");
             }
         } catch (Exception e) {
-            logger.info("Parsing xml failed");
-            e.printStackTrace(); // Handle parsing or database insertion errors
+            logger.info("Parsing xml or saving to database failed");
+            e.printStackTrace();
         }
     }
 }
