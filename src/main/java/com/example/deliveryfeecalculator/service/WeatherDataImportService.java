@@ -41,7 +41,7 @@ public class WeatherDataImportService {
 
         // Send a GET request to the weather portal's API and retrieve the XML response
         String xmlResponse = webClient.get().uri(apiUrl).retrieve().bodyToMono(String.class).block();
-        logger.info("xmlResponse: "+xmlResponse);
+        logger.info("xmlResponse received");
 
 
         logger.info("trying to parse xml");
