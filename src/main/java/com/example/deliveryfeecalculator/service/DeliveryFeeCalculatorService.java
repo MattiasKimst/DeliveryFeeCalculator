@@ -1,17 +1,27 @@
 package com.example.deliveryfeecalculator.service;
 
+import com.example.deliveryfeecalculator.DeliveryFeeCalculatorApplication;
 import com.example.deliveryfeecalculator.model.WeatherData;
 import com.example.deliveryfeecalculator.repository.WeatherDataRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class DeliveryFeeCalculatorService {
+
+    private static final Logger logger = LoggerFactory.getLogger(DeliveryFeeCalculatorService.class);
 
     @Autowired
     private WeatherDataRepository weatherDataRepository;
 
     public double calculateDeliveryFee(String city, String vehicleType) {
+
+
+        logger.info("calculateDeliveryFee successfully called");
+
         // Retrieve latest entry for weather data of the given city from the database
 
         //The city names differ from station names that we use in db, to make a query we need to map cities to station names
@@ -24,10 +34,15 @@ public class DeliveryFeeCalculatorService {
 
         //collect latest data of the station from Ilmateenistus
         WeatherData weatherData = weatherDataRepository.findLatestByStationName(stationName);
+        logger.info("latest weather data fetched from db with timestamp"+weatherData.getTimestamp());
+
+
 
 
         double baseFee = calculateBaseFee(city, vehicleType);
+        logger.info("calculated basefee: " + baseFee);
         double extraFee = calculateExtraFees(weatherData, vehicleType);
+        //logger.info("extrafee calculated: "+extraFee);
 
 
         //deliveryfee is the sum of basefee and extrafee
@@ -35,6 +50,8 @@ public class DeliveryFeeCalculatorService {
     }
 
     private double calculateBaseFee(String city, String vehicleType) {
+
+
         // Implementation of business rules for calculateing the regional base fee
         switch (city) {
             case "Tallinn":

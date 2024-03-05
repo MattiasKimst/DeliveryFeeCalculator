@@ -4,6 +4,8 @@ import com.example.deliveryfeecalculator.model.Station;
 import com.example.deliveryfeecalculator.model.WeatherData;
 import com.example.deliveryfeecalculator.model.Observations;
 import com.example.deliveryfeecalculator.repository.WeatherDataRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -13,12 +15,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
-import java.sql.Timestamp;
 import java.util.List;
 
 @Service
 public class WeatherDataImportService {
 
+    private static final Logger logger = LoggerFactory.getLogger(WeatherDataImportService.class);
     @Autowired
     private WeatherDataRepository weatherDataRepository;
 
@@ -29,9 +31,11 @@ public class WeatherDataImportService {
 
         // instance of WebClient to make HTTP requests
         WebClient webClient = WebClient.create();
+        logger.info("webclient created");
 
         // Send a GET request to the weather portal's API and retrieve the XML response
         String xmlResponse = webClient.get().uri(apiUrl).retrieve().bodyToMono(String.class).block();
+        logger.info("xmlResponse to Ilmateenistus api sent");
 
         // Parse the XML response using JAXB
         try {
