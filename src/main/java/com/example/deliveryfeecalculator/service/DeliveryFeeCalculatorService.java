@@ -152,20 +152,18 @@ public class DeliveryFeeCalculatorService {
             //type = Scooter or Bike
             String weatherPhenomenon = weatherData.getWeatherPhenomenon();
             logger.info("Weather phenomenon "+ weatherPhenomenon);
-            if ("Scooter".equals(vehicleType) || "Bike".equals(vehicleType)) {
-                //Weather phenomenon is related to snow or sleet, then WPEF = 1 €
-                if ("snow".equalsIgnoreCase(weatherPhenomenon) || "sleet".equalsIgnoreCase(weatherPhenomenon)) {
-                    extraFee += 1.0;
-                }
-                //Weather phenomenon is related to rain, then WPEF = 0,5 €
-                else if ("rain".equalsIgnoreCase(weatherPhenomenon)) {
-                    extraFee += 0.5;
-                }
-                //In case the weather phenomenon is glaze, hail, or thunder, then the error message “Usage of
-                //selected vehicle type is forbidden” has to be given
-                else if ("glaze".equalsIgnoreCase(weatherPhenomenon) || "hail".equalsIgnoreCase(weatherPhenomenon) || "thunder".equalsIgnoreCase(weatherPhenomenon)) {
-                    throw new IllegalArgumentException("Usage of selected vehicle type is forbidden");
-                }
+            //Weather phenomenon is related to snow or sleet, then WPEF = 1 €
+            if ("snow".equalsIgnoreCase(weatherPhenomenon) || "sleet".equalsIgnoreCase(weatherPhenomenon)) {
+                extraFee += 1.0;
+            }
+            //Weather phenomenon is related to rain, then WPEF = 0,5 €
+            else if ("rain".equalsIgnoreCase(weatherPhenomenon)) {
+                extraFee += 0.5;
+            }
+            //In case the weather phenomenon is glaze, hail, or thunder, then the error message “Usage of
+            //selected vehicle type is forbidden” has to be given
+            else if ("glaze".equalsIgnoreCase(weatherPhenomenon) || "hail".equalsIgnoreCase(weatherPhenomenon) || "thunder".equalsIgnoreCase(weatherPhenomenon)) {
+                throw new IllegalArgumentException("Usage of selected vehicle type is forbidden");
             }
         }
 
