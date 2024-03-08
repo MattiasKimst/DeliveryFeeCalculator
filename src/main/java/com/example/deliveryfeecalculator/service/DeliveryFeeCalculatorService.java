@@ -17,12 +17,12 @@ public class DeliveryFeeCalculatorService {
     private WeatherDataRepository weatherDataRepository;
 
 
-
     /**
-     Calculates the delivery fee based on the given city and vehicle type.
-     @param city The name of the city for delivery.
-     @param vehicleType The type of vehicle used for delivery.
-     @return The calculated delivery fee.
+     * Calculates the delivery fee based on the given city and vehicle type.
+     *
+     * @param city        The name of the city for delivery.
+     * @param vehicleType The type of vehicle used for delivery.
+     * @return The calculated delivery fee.
      */
 
     public double calculateDeliveryFee(String city, String vehicleType) {
@@ -32,7 +32,7 @@ public class DeliveryFeeCalculatorService {
             case "Tallinn" -> "Tallinn-Harku";
             case "Tartu" -> "Tartu-Tõravere";
             case "Pärnu" -> "Pärnu";
-            default -> city;
+            default -> throw new IllegalArgumentException("Invalid input for city");
         };
 
 
@@ -56,11 +56,10 @@ public class DeliveryFeeCalculatorService {
     }
 
 
-
-
     /**
      * Calculates the base delivery fee based on the given city and vehicle type
      * according to the defined business rules
+     *
      * @param city        The name of the city for delivery.
      * @param vehicleType The type of vehicle used for delivery.
      * @return The calculated base delivery fee.
@@ -77,6 +76,9 @@ public class DeliveryFeeCalculatorService {
                         return 3.5;
                     case "Bike":
                         return 3.0;
+                    default:
+                        throw new IllegalArgumentException("Invalid input for vehicle");
+
                 }
             case "Tartu":
                 switch (vehicleType) {
@@ -86,6 +88,8 @@ public class DeliveryFeeCalculatorService {
                         return 3.0;
                     case "Bike":
                         return 2.5;
+                    default:
+                        throw new IllegalArgumentException("Invalid input for vehicle");
                 }
             case "Pärnu":
                 switch (vehicleType) {
@@ -95,16 +99,20 @@ public class DeliveryFeeCalculatorService {
                         return 2.5;
                     case "Bike":
                         return 2.0;
+                    default:
+                        throw new IllegalArgumentException("Invalid input for vehicle");
                 }
-            default:
-                return 0.0; // if invalid city or vehicle type return 0
         }
+
+        return 0;//if input city and vehicle wasn't mapped to any cases (shouldn't happen
+        //  because in case of invalid city or vehicle an exception is thrown before
     }
 
 
     /**
      * Calculates the extra delivery fees based on the given weather data and vehicle type
      * according to the defined business rules
+     *
      * @param weatherData The weather data used for calculating extra fees.
      * @param vehicleType The type of vehicle used for delivery.
      * @return The calculated extra delivery fees.
@@ -131,10 +139,9 @@ public class DeliveryFeeCalculatorService {
             }
 
 
-
             // Extra fee based on wind speed (WSEF) in a specific city is paid in case Vehicle type = Bike
             double windSpeed = weatherData.getWindSpeed();
-            logger.info("Wind speed "+windSpeed);
+            logger.info("Wind speed " + windSpeed);
             if ("Bike".equals(vehicleType)) {
                 //Wind speed is between 10 m/s and 20 m/s, then WSEF = 0,5 €
                 if (windSpeed >= 10 && windSpeed <= 20) {
@@ -148,11 +155,10 @@ public class DeliveryFeeCalculatorService {
             }
 
 
-
             // Extra fee based on weather phenomenon (WPEF) in a specific city is paid in case Vehicle
             //type = Scooter or Bike
             String weatherPhenomenon = weatherData.getWeatherPhenomenon();
-            logger.info("Weather phenomenon "+ weatherPhenomenon);
+            logger.info("Weather phenomenon " + weatherPhenomenon);
             //Weather phenomenon is related to snow or sleet, then WPEF = 1 €
             if ("snow".equalsIgnoreCase(weatherPhenomenon) || "sleet".equalsIgnoreCase(weatherPhenomenon)) {
                 extraFee += 1.0;
