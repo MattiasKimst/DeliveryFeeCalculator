@@ -39,6 +39,8 @@ and a vehicle from list {"Car","Scooter","Bike"}. You can test invalid input asw
 corresponding error message and null value for fee.
 http://localhost:8080/calculateDeliveryFee?stationName=<city>&vehicleType=<vehicle>
 
+In order to run Junit test, make sure that "Generic H2 (Server)" option is selected from H2 console
+
 ## Business rules
 Business rules to calculate regional base fee (RBF):
 - In case City = Tallinn and:

@@ -160,16 +160,16 @@ public class DeliveryFeeCalculatorService {
             String weatherPhenomenon = weatherData.getWeatherPhenomenon();
             logger.info("Weather phenomenon " + weatherPhenomenon);
             //Weather phenomenon is related to snow or sleet, then WPEF = 1 €
-            if ("snow".equalsIgnoreCase(weatherPhenomenon) || "sleet".equalsIgnoreCase(weatherPhenomenon)) {
+            if (weatherPhenomenon.toLowerCase().contains("snow") || weatherPhenomenon.toLowerCase().contains("sleet")) {
                 extraFee += 1.0;
             }
             //Weather phenomenon is related to rain, then WPEF = 0,5 €
-            else if ("rain".equalsIgnoreCase(weatherPhenomenon)) {
+            else if (weatherPhenomenon.toLowerCase().contains("rain")) {
                 extraFee += 0.5;
             }
             //In case the weather phenomenon is glaze, hail, or thunder, then the error message “Usage of
             //selected vehicle type is forbidden” has to be given
-            else if ("glaze".equalsIgnoreCase(weatherPhenomenon) || "hail".equalsIgnoreCase(weatherPhenomenon) || "thunder".equalsIgnoreCase(weatherPhenomenon)) {
+            else if (weatherPhenomenon.toLowerCase().contains("glaze") || weatherPhenomenon.toLowerCase().contains("hail") || weatherPhenomenon.toLowerCase().contains("thunder")) {
                 throw new IllegalArgumentException("Usage of selected vehicle type is forbidden");
             }
         }
