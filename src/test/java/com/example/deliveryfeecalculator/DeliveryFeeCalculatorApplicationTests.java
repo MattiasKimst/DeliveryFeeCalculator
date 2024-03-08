@@ -10,11 +10,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 
 
 @SpringBootTest
@@ -23,7 +26,7 @@ class DeliveryFeeCalculatorApplicationTests {
 
     @MockBean
     private WeatherDataRepository weatherDataRepository;
-    @MockBean
+    @Autowired
     private DeliveryFeeCalculatorService deliveryFeeCalculatorService;
 
     @Test
@@ -55,7 +58,7 @@ class DeliveryFeeCalculatorApplicationTests {
         // Mock weather data for Tartu with specific conditions triggering extra fees
         WeatherData tartuWeatherData = new WeatherData();
         tartuWeatherData.setAirTemperature(-15.0); // Air temperature is less than -10̊ C, then ATEF = 1 €
-        tartuWeatherData.setWindSpeed(15.0); // Wind speed is between 10 m/s and 20 m/s, then WSEF = 0,5 €
+        tartuWeatherData.setWindSpeed(15.0); // vehicle type is not Bike, then WSEF = 0 €
         tartuWeatherData.setWeatherPhenomenon("snow"); // Weather phenomenon is related to snow or sleet, then WPEF = 1 €
 
         // Mock the repository to return the mocked weather data
@@ -65,7 +68,7 @@ class DeliveryFeeCalculatorApplicationTests {
         double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Tartu", "Scooter");
 
         // Assert the calculated delivery fee
-        assertEquals(5.5, deliveryFee); // Expected delivery fee = RBF (3) + ATEF (1) + WSEF (0.5) + WPEF (1)
+        assertEquals(5.0, deliveryFee); // Expected delivery fee = RBF (3) + ATEF (1) + WSEF (0) + WPEF (1)
     }
 
     @Test
@@ -73,17 +76,17 @@ class DeliveryFeeCalculatorApplicationTests {
         // Mock weather data for Pärnu with specific conditions triggering extra fees
         WeatherData pärnuWeatherData = new WeatherData();
         pärnuWeatherData.setAirTemperature(-5.0); // Air temperature is between -10̊ C and 0̊ C, then ATEF = 0,5 €
-        pärnuWeatherData.setWindSpeed(5.0); // wind speed is less than 10m/s, then WSEF = 0€
+        pärnuWeatherData.setWindSpeed(15.0); // Wind speed is between 10 m/s and 20 m/s, vehicle = bike, then WSEF = 0,5 €
         pärnuWeatherData.setWeatherPhenomenon("rain"); // Weather phenomenon is related to rain, then WPEF = 0,5 €
 
         // Mock the repository to return the mocked weather data
         when(weatherDataRepository.findLatestByStationName("Pärnu")).thenReturn(pärnuWeatherData);
 
-        // Calculate delivery fee for pärnu with a scooter RBF= 2.5€
+        // Calculate delivery fee for pärnu with a scooter RBF= 2€
         double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Pärnu", "Bike");
 
         // Assert the calculated delivery fee
-        assertEquals(3.5, deliveryFee); // Expected delivery fee = RBF (2.5) + ATEF (0.5) + WSEF (0) + WPEF (0.5)
+        assertEquals(3.5, deliveryFee); // Expected delivery fee = RBF (2) + ATEF (0.5) + WSEF (0.5) + WPEF (0.5)
     }
 
     @Test
@@ -91,7 +94,7 @@ class DeliveryFeeCalculatorApplicationTests {
         // Mock weather data for Tallinn with specific conditions triggering extra fees
         WeatherData tallinnWeatherData = new WeatherData();
         tallinnWeatherData.setAirTemperature(5.0); //Air temperature is more than 0 C, then ATEF = 0 €
-        tallinnWeatherData.setWindSpeed(25.0); // In case of wind speed is greater than 20 m/s, then the error message
+        tallinnWeatherData.setWindSpeed(25.0); // In case of wind speed is greater than 20 m/s, then the error should be thrown
         tallinnWeatherData.setWeatherPhenomenon(""); //no weather phenomenon
 
         // Mock the repository to return the mocked weather data
@@ -99,7 +102,7 @@ class DeliveryFeeCalculatorApplicationTests {
 
         // Assert the calculated delivery fee
         assertThrows(IllegalArgumentException.class, () -> {
-            double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Tallinn", "Scooter");
+            double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Tallinn", "Bike");
         });
     }
 
