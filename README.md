@@ -6,10 +6,11 @@ Developed according to Java Programming Trial Task by Fujitsu Estonia 2024 by Ma
 The Delivery Fee Calculator is a sub-functionality of a food delivery application that calculates the delivery fee for food couriers based on defined business rules such as regional base fee, vehicle type, and weather conditions. 
 
 ## Key Features
-1. **Database Management**: Stores and manages weather data, including information such as station name, WMO code, air temperature, wind speed, weather phenomenon, and timestamp of observations.
-2. **Scheduled Weather Data Import**: Configurable scheduled task (CronJob) imports weather data from the Estonian Environment Agency's weather portal, ensuring the database is updated with the latest information at regular intervals.
+1. **Database Management**: Stores and manages weather data, including information such as station name, WMO code, air temperature, wind speed, weather phenomenon, and timestamp in H2 database (data directory in  project structure).
+2. **Scheduled Weather Data Import**:(CronJob) imports weather data from the Estonian Environment Agency's weather portal on 15th minute of every hour
 3. **Delivery Fee Calculation**: Implements business rules to calculate the delivery fee based on input parameters from REST interface requests, weather data from the database, and predefined pricing criteria.
 4. **RESTful Interface**: Provides a RESTful API endpoint (/calculateDeliveryFee) to request delivery fees based on specified city and vehicle type. Returns the calculated delivery fee or appropriate error messages.
+5. **Junit Test coverage** All possible inputs and outputs, endpoint and business logic are covered by junit tests.
 
 ## Technologies Used
 - Java 
@@ -18,36 +19,63 @@ The Delivery Fee Calculator is a sub-functionality of a food delivery applicatio
 - H2 Database 
 - RESTful API 
 - CronJob task scheduler
+- Junit tests
 
 ## Dependencies
 Third-party dependencies are used in the project. Browse the Maven pom.xml file for details of libraries and their versions.
 
 ## How to Run
 
-1. Clone the Repository:
+Make sure to use Java 21
 
-```
-git clone <repository-url>
-```
+This is a maven project. If encountering problems with running this, seek for maven or your IDE docs.
 
-2. Move to project directory
-```
-cd <project-directory>
-```
-3. Build the project
+In default configuration, this application runs on port 8080. Visit http://localhost:8080 for welcome page
 
-```
-mvn clean install
-```
-4. Run the Application:
-```
-mvn spring-boot:run
-```
-This command will start the Spring Boot application. By default, the application will run on port 8080.
+H2 database console could be accessed at http://localhost:8080/h2-console login credentials are in application.properties file
 
-Access the Application:
-Once the application has started successfully, you can access it in your web browser using the following URL:
+To make a get request, replace < city > and < vehicle > which you want to calculate the fee for with one of the cities from valid input space {"Tallinn","Tartu","Pärnu"} 
+and a vehicle from list {"Car","Scooter","Bike"}. You can test invalid input aswell, which results in response containing
+corresponding error message and null value for fee.
+http://localhost:8080/calculateDeliveryFee?stationName=<city>&vehicleType=<vehicle>
 
-http://localhost:8080
+## Business rules
+Business rules to calculate regional base fee (RBF):
+- In case City = Tallinn and:
+- Vehicle type = Car, then RBF = 4 €
+- Vehicle type = Scooter, then RBF = 3,5 €
+- Vehicle type = Bike, then RBF = 3 €
+- In case City = Tartu and:
+- Vehicle type = Car, then RBF = 3,5 €
+- Vehicle type = Scooter, then RBF = 3 €
+- Vehicle type = Bike, then RBF = 2,5 €
+- In case City = Pärnu and:
+- Vehicle type = Car, then RBF = 3 €
+- Vehicle type = Scooter, then RBF = 2,5 €
+- Vehicle type = Bike, then RBF = 2 €
+
+Business rules to calculate extra fees for weather conditions:
+
+Extra fee based on air temperature (ATEF) in a specific city is paid in case Vehicle type =
+Scooter or Bike and:
+- Air temperature is less than -10̊ C, then ATEF = 1 €
+- Air temperature is between -10̊ C and 0̊ C, then ATEF = 0,5 €
+
+Extra fee based on wind speed (WSEF) in a specific city is paid in case Vehicle type = Bike
+and:
+
+- Wind speed is between 10 m/s and 20 m/s, then WSEF = 0,5 €
+- In case of wind speed is greater than 20 m/s, then the error message “Usage of selected vehicle
+type is forbidden” has to be given
+
+Extra fee based on weather phenomenon (WPEF) in a specific city is paid in case Vehicle
+type = Scooter or Bike and:
+
+- Weather phenomenon is related to snow or sleet, then WPEF = 1 €
+- Weather phenomenon is related to rain, then WPEF = 0,5 €
+- In case the weather phenomenon is glaze, hail, or thunder, then the error message “Usage of
+selected vehicle type is forbidden” has to be given
+
+
 
 
