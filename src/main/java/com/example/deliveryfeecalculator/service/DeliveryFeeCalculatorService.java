@@ -17,6 +17,7 @@ public class DeliveryFeeCalculatorService {
     private WeatherDataRepository weatherDataRepository;
 
 
+
     /**
      Calculates the delivery fee based on the given city and vehicle type.
      @param city The name of the city for delivery.
@@ -64,7 +65,7 @@ public class DeliveryFeeCalculatorService {
      * @param vehicleType The type of vehicle used for delivery.
      * @return The calculated base delivery fee.
      */
-    private double calculateBaseFee(String city, String vehicleType) {
+    private static double calculateBaseFee(String city, String vehicleType) {
 
         // Business rules to calculate regional base fee (RBF):
         switch (city) {
@@ -109,7 +110,7 @@ public class DeliveryFeeCalculatorService {
      * @return The calculated extra delivery fees.
      * @throws IllegalArgumentException if the vehicle type usage is forbidden based on weather conditions.
      */
-    private double calculateExtraFees(WeatherData weatherData, String vehicleType) {
+    private static double calculateExtraFees(WeatherData weatherData, String vehicleType) {
 
         //we will increase extraFee by each fulfilled condition defined in business rules
         double extraFee = 0.0;

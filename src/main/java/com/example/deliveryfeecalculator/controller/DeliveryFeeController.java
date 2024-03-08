@@ -29,7 +29,6 @@ public class DeliveryFeeController {
     public ApiResponse<Double> calculateDeliveryFee(@RequestParam String stationName, @RequestParam String vehicleType) {
         logger.info("calculateDeliveryFee call received");
         try {
-
             //call the calculateDeliveryFee method to calculate the delivery fee.
             double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee(stationName, vehicleType);
             logger.info("deliveryfee " + deliveryFee + " calculated");
