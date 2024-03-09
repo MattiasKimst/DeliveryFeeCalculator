@@ -1,8 +1,10 @@
 package com.example.deliveryfeecalculator.service;
 
 import com.example.deliveryfeecalculator.model.BaseFeeRule;
+import com.example.deliveryfeecalculator.model.TemperatureExtraFeeRule;
 import com.example.deliveryfeecalculator.model.WeatherData;
 import com.example.deliveryfeecalculator.repository.BaseFeeRuleRepository;
+import com.example.deliveryfeecalculator.repository.TemperatureExtraFeeRuleRepository;
 import com.example.deliveryfeecalculator.repository.WeatherDataRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,24 +120,18 @@ public class DeliveryFeeCalculatorService {
      * @return The calculated extra delivery fees.
      * @throws IllegalArgumentException if the vehicle type usage is forbidden based on weather conditions.
      */
-    private static double calculateExtraFees(WeatherData weatherData, String vehicleType) {
+
+    @Autowired
+    private TemperatureExtraFeeRuleRepository temperatureExtraFeeRuleRepository;
+    public double calculateExtraFees(WeatherData weatherData, String vehicleType) {
 
         //we will increase extraFee by each fulfilled condition defined in business rules
         double extraFee = 0.0;
 
-        if (("Scooter".equals(vehicleType) || "Bike".equals(vehicleType)) && weatherData != null) {
-
-            // Extra fee based on air temperature (ATEF) in a specific city is paid in case Vehicle type =
-            //Scooter or Bike
-            double airTemperature = weatherData.getAirTemperature();
-            logger.info("Airtemperature: " + airTemperature);
-            //Air temperature is less than -10̊ C, then ATEF = 1 €
-            if (airTemperature < -10) {
-                extraFee += 1.0;
-            }
-            //Air temperature is between -10̊ C and 0̊ C, then ATEF = 0,5 €
-            else if (airTemperature >= -10 && airTemperature < 0) {
-                extraFee += 0.5;
+        List<TemperatureExtraFeeRule> temperatureRules = temperatureExtraFeeRuleRepository.findAll();
+        for (TemperatureExtraFeeRule rule : temperatureRules) {
+            if (rule.getVehicle().equals(vehicleType) && weatherData.getAirTemperature() >= rule.getMinTemperature() && weatherData.getAirTemperature() <= rule.getMaxTemperature()) {
+                extraFee += rule.getFee();
             }
 
 

@@ -21,13 +21,13 @@ public class BaseFeeRuleController {
     @Autowired
     private BaseFeeRuleService baseFeeRuleService;
 
-    @GetMapping("/getRules")
+    @GetMapping("base/getRules")
     public ResponseEntity<List<BaseFeeRule>> getAllBaseFeeRules() {
         List<BaseFeeRule> baseFeeRules = baseFeeRuleService.getAllBaseFeeRules();
         return new ResponseEntity<>(baseFeeRules, HttpStatus.OK);
     }
 
-    @PostMapping("/postRule")
+    @PostMapping("/base/postRule")
     public ResponseEntity<BaseFeeRule> createBaseFeeRule(@RequestBody BaseFeeRule baseFeeRule) {
         logger.info("Post request received");
         BaseFeeRule createdBaseFeeRule = baseFeeRuleService.createBaseFeeRule(
@@ -41,7 +41,7 @@ public class BaseFeeRuleController {
     }
 
 
-    @DeleteMapping("/delete{id}")
+    @DeleteMapping("/base/delete{id}")
     public ResponseEntity<Void> deleteBaseFeeRule(@PathVariable Long id) {
         baseFeeRuleService.deleteBaseFeeRule(id);
         return ResponseEntity.noContent().build();

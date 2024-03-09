@@ -84,6 +84,18 @@
         <input type="number" id="fee" name="fee" step="0.01" required><br><br>
         <input type="submit" value="Submit">
     </form>
+    <form id="temperatureRuleForm">
+        <label for="vehicle">Vehicle:</label>
+        <input type="text" id="vehicle" name="vehicle" required><br><br>
+        <label for="minTemp">Minimum Temperature:</label>
+        <input type="number" id="minTemp" name="minTemp" step="0.01" required><br><br>
+        <label for="maxTemp">Maximum Temperature:</label>
+        <input type="number" id="maxTemp" name="maxTemp" step="0.01" required><br><br>
+        <label for="fee">Fee:</label>
+        <input type="number" id="fee" name="fee" step="0.01" required><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
 
 </div>
 <script>
@@ -95,7 +107,7 @@
         const vehicle = formData.get("vehicle");
         const fee = formData.get("fee");
 
-        fetch('http://localhost:8080/postRule', {
+        fetch('http://localhost:8080/base/postRule', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -122,6 +134,42 @@
                 alert("An error occurred. Please try again.");
             });
     });
+    document.getElementById("temperatureRuleForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const vehicle = formData.get("vehicle");
+        const minTemperature = formData.get("minTemperature");
+        const maxTemperature = formData.get("maxTemperature");
+        const fee = formData.get("fee");
+
+        fetch('http://localhost:8080/temp/postRule', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                vehicle: vehicle,
+                minTemp: minTemperature,
+                maxTemp: maxTemperature,
+                fee: fee
+            }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                alert("Temperature rule added/updated successfully!");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+    });
+
 
 </script>
 </body>
