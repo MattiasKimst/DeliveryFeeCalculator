@@ -57,6 +57,7 @@
     <h2>How to Run</h2>
     <ol>
         <li>To make a GET request, replace <code>&lt;city&gt;</code> and <code>&lt;vehicle&gt;</code> with one of the cities from valid input space {Tallinn, Tartu, Pärnu} and a vehicle from the list {Car, Scooter, Bike}. You can test invalid input as well, which results in a response containing corresponding error message and null value for fee. <br> <br>URL: "http://localhost:8080/calculateDeliveryFee?stationName=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt"<br><br></a></li>
+        <li>To make a GET request with optional datetime parameter, replace <code>&lt;city&gt;</code>, <code>&lt;vehicle&gt;</code> and <code>< yyyy-MM-dd'T'HH:mm:ss ></code> with one of the cities from valid input space {Tallinn, Tartu, Pärnu}, a vehicle from the list {Car, Scooter, Bike} and a date in provided format like 2024-03-09T10:00:00. In case of invalid date format, corresponding error message will be provided in response <br> <br>URL: "http://localhost:8080/calculateDeliveryFee?stationName=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt&amp;datetime=&lt;yyyy-MM-dd'T'HH:mm:ss&gt"<br><br></a></li>
         <li>The H2 database console could be accessed at <a href="http://localhost:8080/h2-console">http://localhost:8080/h2-console</a>. Login credentials are in <code>application.properties</code> file.</li>
     </ol>
 </div>

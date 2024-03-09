@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 @Service
 public class DeliveryFeeCalculatorService {
@@ -22,11 +25,24 @@ public class DeliveryFeeCalculatorService {
      *
      * @param city        The name of the city for delivery.
      * @param vehicleType The type of vehicle used for delivery.
+     * @param date        Additional parameter, by default null, if provided correctly, fee for that time in past will be calculated
      * @return The calculated delivery fee.
      */
 
-    public double calculateDeliveryFee(String city, String vehicleType) {
+    public double calculateDeliveryFee(String city, String vehicleType, String date) {
 
+        LocalDateTime dateTime = null;
+        //if date isn't null, then date was provided in request
+        if (date != null) {
+            logger.info("Trying to parse date");
+            try {
+                dateTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
+                logger.info("Parsed date "+dateTime);
+            } catch (Exception e) {//we expect the date to be in format YYYY-MM-DDTHH:MM:SS, otherwise parsing fails and we will continue calculating with latest timestamp
+                logger.info("Parsing dateTime failed, will throw an exception");
+                throw new IllegalArgumentException("Invalid input for datetime");
+            }
+        }
         //The city names differ from station names that we use in db, to make a query we need to map cities to station names
         String stationName = switch (city) {
             case "Tallinn" -> "Tallinn-Harku";
@@ -36,11 +52,18 @@ public class DeliveryFeeCalculatorService {
         };
 
 
+        WeatherData weatherData=null;
         //fetch latest data of the station from database
-        logger.info("trying to fetch latest weatherData from db");
-        WeatherData weatherData = weatherDataRepository.findLatestByStationName(stationName);
-        logger.info("latest weather data fetched from db with timestamp: " + weatherData.getTimestamp());
-
+        if (dateTime == null) {//additional datetime parameter not provided or incorrect
+            logger.info("trying to fetch latest weatherData from db");
+            weatherData = weatherDataRepository.findLatestByStationName(stationName);
+            logger.info("latest weather data fetched from db with timestamp: " + weatherData.getTimestamp());
+        }
+        else {//if additional datetime parameter was provided and was of correct form
+            logger.info("trying to fetch latest weatherData before provided timestamp from db");
+            weatherData = weatherDataRepository.findLatestBeforeDateTime(stationName,dateTime);
+            logger.info("weather data fetched from db with timestamp: " + weatherData.getTimestamp());
+        }
 
         //calculate base fee
         double baseFee = calculateBaseFee(city, vehicleType);
