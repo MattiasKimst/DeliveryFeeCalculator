@@ -39,7 +39,8 @@ public class DeliveryFeeCalculatorService {
                 dateTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
                 logger.info("Parsed date "+dateTime);
             } catch (Exception e) {//we expect the date to be in format YYYY-MM-DDTHH:MM:SS, otherwise parsing fails and we will continue calculating with latest timestamp
-                logger.info("Parseing dateTime failed, will calculate without date parameter");
+                logger.info("Parsing dateTime failed, will throw an exception");
+                throw new IllegalArgumentException("Invalid input for datetime");
             }
         }
         //The city names differ from station names that we use in db, to make a query we need to map cities to station names

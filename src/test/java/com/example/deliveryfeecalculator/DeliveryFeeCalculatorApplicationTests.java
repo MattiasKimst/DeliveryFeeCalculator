@@ -144,6 +144,7 @@ class DeliveryFeeCalculatorApplicationTests {
         });
     }
 
+    @Test
     void testTartuScooterHail() {
 
         WeatherData weatherData = new WeatherData();
@@ -158,6 +159,39 @@ class DeliveryFeeCalculatorApplicationTests {
         assertThrows(IllegalArgumentException.class, () -> {
             double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Tartu", "Scooter", null);
         });
+    }
+    @Test
+    void testCalculateDeliveryFeeEndpointValidDateTime() {
+
+        // Create the URL for the API endpoint, if the server port is 8080
+        String apiUrl = "http://localhost:8080/calculateDeliveryFee?stationName=Tallinn&vehicleType=Car&datetime=2024-03-09T10:00:00";
+
+        // Send a GET request to the endpoint
+        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
+
+        // Verify that the response status code is OK (200)
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verify that the response body contains the expected result
+        String expectedResponse = "{\"success\":true,\"message\":\"Delivery fee calculated successfully\",\"data\":4.0}";
+        assertEquals(expectedResponse, response.getBody());
+    }
+    @Test
+    void testCalculateDeliveryFeeEndpointInvalidDatetime() {
+
+        // Create the URL for the API endpoint, if the server port is 8080
+        // test with wrong input for vehicle
+        String apiUrl = "http://localhost:8080/calculateDeliveryFee?stationName=Tallinn&vehicleType=Bike&datetime=2024MARCH05";
+
+        // Send a GET request to the endpoint
+        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
+
+        // Verify that the response status code is OK (200)
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        // Verify that the response body contains the expected result, for wrong city it should indicate an error
+        String expectedResponse = "{\"success\":false,\"message\":\"Invalid input for datetime\",\"data\":null}";
+        assertEquals(expectedResponse, response.getBody());
     }
 
 
