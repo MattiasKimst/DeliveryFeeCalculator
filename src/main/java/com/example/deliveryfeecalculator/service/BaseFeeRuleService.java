@@ -27,9 +27,15 @@ public class BaseFeeRuleService {
         return baseFeeRuleRepository.findById(id);
     }
 
-    public BaseFeeRule createBaseFeeRule(BaseFeeRule baseFeeRule) {
+    public BaseFeeRule createBaseFeeRule(String city, String vehicle, String station, double fee) {
+        BaseFeeRule baseFeeRule = new BaseFeeRule();
+        baseFeeRule.setCity(city);
+        baseFeeRule.setVehicle(vehicle);
+        baseFeeRule.setStation(station);
+        baseFeeRule.setFee(fee);
         return baseFeeRuleRepository.save(baseFeeRule);
     }
+
 
     public boolean deleteBaseFeeRule(Long id) {
         if (!baseFeeRuleRepository.existsById(id)) {

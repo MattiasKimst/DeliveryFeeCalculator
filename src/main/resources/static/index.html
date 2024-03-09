@@ -53,14 +53,77 @@
 <body>
 <div class="container">
     <h1>Welcome to Delivery Fee Calculator</h1>
-    <p>This application calculates delivery fees for food couriers based on city, weather conditions and vehicle type.</p>
+    <p>This application calculates delivery fees for food couriers based on city, weather conditions and vehicle
+        type.</p>
     <h2>How to Run</h2>
     <ol>
-        <li>To make a GET request, replace <code>&lt;city&gt;</code> and <code>&lt;vehicle&gt;</code> with one of the cities from valid input space {Tallinn, Tartu, Pärnu} and a vehicle from the list {Car, Scooter, Bike}. You can test invalid input as well, which results in a response containing corresponding error message and null value for fee. <br> <br>URL: "http://localhost:8080/calculateDeliveryFee?stationName=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt"<br><br></a></li>
-        <li>To make a GET request with optional datetime parameter, replace <code>&lt;city&gt;</code>, <code>&lt;vehicle&gt;</code> and <code>< yyyy-MM-dd'T'HH:mm:ss ></code> with one of the cities from valid input space {Tallinn, Tartu, Pärnu}, a vehicle from the list {Car, Scooter, Bike} and a date in provided format like 2024-03-09T10:00:00. In case of invalid date format, corresponding error message will be provided in response <br> <br>URL: "http://localhost:8080/calculateDeliveryFee?stationName=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt&amp;datetime=&lt;yyyy-MM-dd'T'HH:mm:ss&gt"<br><br></a></li>
-        <li>The H2 database console could be accessed at <a href="http://localhost:8080/h2-console">http://localhost:8080/h2-console</a>. Login credentials are in <code>application.properties</code> file.</li>
+        <li>To make a GET request, replace <code>&lt;city&gt;</code> and <code>&lt;vehicle&gt;</code> with one of the
+            cities from valid input space {Tallinn, Tartu, Pärnu} and a vehicle from the list {Car, Scooter, Bike}. You
+            can test invalid input as well, which results in a response containing corresponding error message and null
+            value for fee. <br> <br>URL: "http://localhost:8080/calculateDeliveryFee?stationName=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt"<br><br></a>
+        </li>
+        <li>To make a GET request with optional datetime parameter, replace <code>&lt;city&gt;</code>, <code>&lt;vehicle&gt;</code>
+            and <code>< yyyy-MM-dd'T'HH:mm:ss ></code> with one of the cities from valid input space {Tallinn, Tartu,
+            Pärnu}, a vehicle from the list {Car, Scooter, Bike} and a date in provided format like 2024-03-09T10:00:00.
+            In case of invalid date format, corresponding error message will be provided in response <br> <br>URL:
+            "http://localhost:8080/calculateDeliveryFee?stationName=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt&amp;datetime=&lt;yyyy-MM-dd'T'HH:mm:ss&gt"<br><br></a>
+        </li>
+        <li>The H2 database console could be accessed at <a href="http://localhost:8080/h2-console">http://localhost:8080/h2-console</a>.
+            Login credentials are in <code>application.properties</code> file.
+        </li>
     </ol>
+    <h2>Add or Update Base Fee Rule</h2>
+    <form id="baseFeeRuleForm">
+        <label for="city">City:</label>
+        <input type="text" id="city" name="city" required><br><br>
+        <label for="station">Station:</label>
+        <input type="text" id="station" name="station" required><br><br>
+        <label for="vehicle">Vehicle:</label>
+        <input type="text" id="vehicle" name="vehicle" required><br><br>
+        <label for="fee">Fee:</label>
+        <input type="number" id="fee" name="fee" step="0.01" required><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
 </div>
+<script>
+    document.getElementById("baseFeeRuleForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const city = formData.get("city");
+        const station = formData.get("station");
+        const vehicle = formData.get("vehicle");
+        const fee = formData.get("fee");
+
+        fetch('http://localhost:8080/postRule', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                city: city,
+                vehicle: vehicle,
+                station: station,
+                fee: fee
+            }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                alert("Base fee rule added/updated successfully!");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+    });
+
+</script>
 </body>
 
 </html>
