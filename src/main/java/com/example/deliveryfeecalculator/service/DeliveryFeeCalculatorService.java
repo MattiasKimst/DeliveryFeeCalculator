@@ -25,19 +25,20 @@ public class DeliveryFeeCalculatorService {
      *
      * @param city        The name of the city for delivery.
      * @param vehicleType The type of vehicle used for delivery.
+     * @param date        Additional parameter, by default null, if provided correctly, fee for that time in past will be calculated
      * @return The calculated delivery fee.
      */
 
     public double calculateDeliveryFee(String city, String vehicleType, String date) {
 
-
         LocalDateTime dateTime = null;
+        //if date isn't null, then date was provided in request
         if (date != null) {
             logger.info("Trying to parse date");
             try {
                 dateTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
                 logger.info("Parsed date "+dateTime);
-            } catch (Exception e) {
+            } catch (Exception e) {//we expect the date to be in format YYYY-MM-DDTHH:MM:SS, otherwise parsing fails and we will continue calculating with latest timestamp
                 logger.info("Parseing dateTime failed, will calculate without date parameter");
             }
         }
@@ -52,12 +53,12 @@ public class DeliveryFeeCalculatorService {
 
         WeatherData weatherData=null;
         //fetch latest data of the station from database
-        if (dateTime == null) {
+        if (dateTime == null) {//additional datetime parameter not provided or incorrect
             logger.info("trying to fetch latest weatherData from db");
             weatherData = weatherDataRepository.findLatestByStationName(stationName);
             logger.info("latest weather data fetched from db with timestamp: " + weatherData.getTimestamp());
         }
-        else {
+        else {//if additional datetime parameter was provided and was of correct form
             logger.info("trying to fetch latest weatherData before provided timestamp from db");
             weatherData = weatherDataRepository.findLatestBeforeDateTime(stationName,dateTime);
             logger.info("weather data fetched from db with timestamp: " + weatherData.getTimestamp());

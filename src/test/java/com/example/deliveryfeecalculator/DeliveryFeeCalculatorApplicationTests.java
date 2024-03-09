@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 @SpringBootTest
@@ -102,7 +103,7 @@ class DeliveryFeeCalculatorApplicationTests {
         when(weatherDataRepository.findLatestByStationName("Tartu-Tõravere")).thenReturn(tartuWeatherData);
 
         // Calculate delivery fee for Tartu with a scooter RBF= 3€
-        double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Tartu", "Scooter", LocalDateTime.now().toString());
+        double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Tartu", "Scooter", null);
 
         // Assert the calculated delivery fee
         assertEquals(5.0, deliveryFee); // Expected delivery fee = RBF (3) + ATEF (1) + WSEF (0) + WPEF (1)
@@ -120,7 +121,7 @@ class DeliveryFeeCalculatorApplicationTests {
         when(weatherDataRepository.findLatestByStationName("Pärnu")).thenReturn(pärnuWeatherData);
 
         // Calculate delivery fee for pärnu with a scooter RBF= 2€
-        double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Pärnu", "Bike", LocalDateTime.now().toString());
+        double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Pärnu", "Bike", null);
 
         // Assert the calculated delivery fee
         assertEquals(3.5, deliveryFee); // Expected delivery fee = RBF (2) + ATEF (0.5) + WSEF (0.5) + WPEF (0.5)
@@ -139,7 +140,7 @@ class DeliveryFeeCalculatorApplicationTests {
 
         // Assert the calculated delivery fee
         assertThrows(IllegalArgumentException.class, () -> {
-            double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Tallinn", "Bike", LocalDateTime.now().toString());
+            double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Tallinn", "Bike", null);
         });
     }
 
@@ -155,7 +156,7 @@ class DeliveryFeeCalculatorApplicationTests {
 
         // Assert the calculated delivery fee
         assertThrows(IllegalArgumentException.class, () -> {
-            double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Tartu", "Scooter", LocalDateTime.now().toString());
+            double deliveryFee = deliveryFeeCalculatorService.calculateDeliveryFee("Tartu", "Scooter", null);
         });
     }
 
