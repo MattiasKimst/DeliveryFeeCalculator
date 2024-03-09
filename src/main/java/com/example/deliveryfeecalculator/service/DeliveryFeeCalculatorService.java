@@ -1,6 +1,8 @@
 package com.example.deliveryfeecalculator.service;
 
+import com.example.deliveryfeecalculator.model.BaseFeeRule;
 import com.example.deliveryfeecalculator.model.WeatherData;
+import com.example.deliveryfeecalculator.repository.BaseFeeRuleRepository;
 import com.example.deliveryfeecalculator.repository.WeatherDataRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 
 @Service
@@ -37,8 +40,9 @@ public class DeliveryFeeCalculatorService {
             logger.info("Trying to parse date");
             try {
                 dateTime = LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME);
-                logger.info("Parsed date "+dateTime);
-            } catch (Exception e) {//we expect the date to be in format YYYY-MM-DDTHH:MM:SS, otherwise parsing fails and we will continue calculating with latest timestamp
+                logger.info("Parsed date " + dateTime);
+            } catch (
+                    Exception e) {//we expect the date to be in format YYYY-MM-DDTHH:MM:SS, otherwise parsing fails and we will continue calculating with latest timestamp
                 logger.info("Parsing dateTime failed, will throw an exception");
                 throw new IllegalArgumentException("Invalid input for datetime");
             }
@@ -52,16 +56,15 @@ public class DeliveryFeeCalculatorService {
         };
 
 
-        WeatherData weatherData=null;
+        WeatherData weatherData = null;
         //fetch latest data of the station from database
         if (dateTime == null) {//additional datetime parameter not provided or incorrect
             logger.info("trying to fetch latest weatherData from db");
             weatherData = weatherDataRepository.findLatestByStationName(stationName);
             logger.info("latest weather data fetched from db with timestamp: " + weatherData.getTimestamp());
-        }
-        else {//if additional datetime parameter was provided and was of correct form
+        } else {//if additional datetime parameter was provided and was of correct form
             logger.info("trying to fetch latest weatherData before provided timestamp from db");
-            weatherData = weatherDataRepository.findLatestBeforeDateTime(stationName,dateTime);
+            weatherData = weatherDataRepository.findLatestBeforeDateTime(stationName, dateTime);
             logger.info("weather data fetched from db with timestamp: " + weatherData.getTimestamp());
         }
 
@@ -87,48 +90,22 @@ public class DeliveryFeeCalculatorService {
      * @param vehicleType The type of vehicle used for delivery.
      * @return The calculated base delivery fee.
      */
-    private static double calculateBaseFee(String city, String vehicleType) {
+    @Autowired
+    private BaseFeeRuleRepository baseFeeRuleRepository;
 
-        // Business rules to calculate regional base fee (RBF):
-        switch (city) {
-            case "Tallinn":
-                switch (vehicleType) {
-                    case "Car":
-                        return 4.0;
-                    case "Scooter":
-                        return 3.5;
-                    case "Bike":
-                        return 3.0;
-                    default:
-                        throw new IllegalArgumentException("Invalid input for vehicle");
+    public double calculateBaseFee(String city, String vehicleType) {
+        // Retrieve all base fee rules from the database
+        List<BaseFeeRule> baseFeeRules = baseFeeRuleRepository.findAll();
 
-                }
-            case "Tartu":
-                switch (vehicleType) {
-                    case "Car":
-                        return 3.5;
-                    case "Scooter":
-                        return 3.0;
-                    case "Bike":
-                        return 2.5;
-                    default:
-                        throw new IllegalArgumentException("Invalid input for vehicle");
-                }
-            case "Pärnu":
-                switch (vehicleType) {
-                    case "Car":
-                        return 3.0;
-                    case "Scooter":
-                        return 2.5;
-                    case "Bike":
-                        return 2.0;
-                    default:
-                        throw new IllegalArgumentException("Invalid input for vehicle");
-                }
+        // Iterate through the rules and find the one that matches the city and vehicle type
+        for (BaseFeeRule rule : baseFeeRules) {
+            if (rule.getCity().equalsIgnoreCase(city) && rule.getVehicle().equalsIgnoreCase(vehicleType)) {
+                return rule.getFee();
+            }
         }
+        // If no matching rule is found, throw an exception
+        throw new IllegalArgumentException("No matching base fee rule found for provided city/vehicle");
 
-        return 0;//if input city and vehicle wasn't mapped to any cases (shouldn't happen
-        //  because in case of invalid city or vehicle an exception is thrown before
     }
 
 

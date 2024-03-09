@@ -54,4 +54,5 @@ public class BaseFeeRule {
     public void setFee(double fee) {
         this.fee = fee;
     }
+
 }
