@@ -43,7 +43,7 @@ class DeliveryFeeCalculatorApplicationTests {
     void testCalculateDeliveryFeeEndpointTallinnCar() {
 
         // Create the URL for the API endpoint, if the server port is 8080
-        String apiUrl = "http://localhost:8080/calculateDeliveryFee?stationName=Tallinn&vehicleType=Car";
+        String apiUrl = "http://localhost:8080/calculateDeliveryFee?city=Tallinn&vehicleType=Car";
 
         // Send a GET request to the endpoint
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
@@ -60,7 +60,7 @@ class DeliveryFeeCalculatorApplicationTests {
 
         // Create the URL for the API endpoint, if the server port is 8080
         // test with wrong input for city
-        String apiUrl = "http://localhost:8080/calculateDeliveryFee?stationName=Narva&vehicleType=Car";
+        String apiUrl = "http://localhost:8080/calculateDeliveryFee?city=Narva&vehicleType=Car";
 
         // Send a GET request to the endpoint
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
@@ -78,7 +78,7 @@ class DeliveryFeeCalculatorApplicationTests {
 
         // Create the URL for the API endpoint, if the server port is 8080
         // test with wrong input for vehicle
-        String apiUrl = "http://localhost:8080/calculateDeliveryFee?stationName=Tartu&vehicleType=Bus";
+        String apiUrl = "http://localhost:8080/calculateDeliveryFee?city=Tartu&vehicleType=Bus";
 
         // Send a GET request to the endpoint
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
@@ -164,7 +164,7 @@ class DeliveryFeeCalculatorApplicationTests {
     void testCalculateDeliveryFeeEndpointValidDateTime() {
 
         // Create the URL for the API endpoint, if the server port is 8080
-        String apiUrl = "http://localhost:8080/calculateDeliveryFee?stationName=Tallinn&vehicleType=Car&datetime=2024-03-09T10:00:00";
+        String apiUrl = "http://localhost:8080/calculateDeliveryFee?city=Tallinn&vehicleType=Car&datetime=2024-03-09T10:00:00";
 
         // Send a GET request to the endpoint
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
@@ -181,7 +181,7 @@ class DeliveryFeeCalculatorApplicationTests {
 
         // Create the URL for the API endpoint, if the server port is 8080
         // test with wrong input for vehicle
-        String apiUrl = "http://localhost:8080/calculateDeliveryFee?stationName=Tallinn&vehicleType=Bike&datetime=2024MARCH05";
+        String apiUrl = "http://localhost:8080/calculateDeliveryFee?city=Tallinn&vehicleType=Bike&datetime=2024MARCH05";
 
         // Send a GET request to the endpoint
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);

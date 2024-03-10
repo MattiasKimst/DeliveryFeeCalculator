@@ -37,7 +37,7 @@ H2 database console could be accessed at http://localhost:8080/h2-console login 
 To make a get request, replace < city > and < vehicle > which you want to calculate the fee for with one of the cities from valid input space {"Tallinn","Tartu","Pärnu"} 
 and a vehicle from list {"Car","Scooter","Bike"}. You can test invalid input aswell, which results in response containing
 corresponding error message and null value for fee.
-http://localhost:8080/calculateDeliveryFee?stationName=<city>&vehicleType=<vehicle>
+http://localhost:8080/calculateDeliveryFee?city=<city>&vehicleType=<vehicle>
 
 In order to run Junit test, make sure that "Generic H2 (Server)" option is selected from H2 console
 
