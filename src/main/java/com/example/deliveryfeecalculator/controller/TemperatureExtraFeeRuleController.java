@@ -20,12 +20,21 @@ public class TemperatureExtraFeeRuleController {
     @Autowired
     private TemperatureExtraFeeRuleService temperatureExtraFeeRuleService;
 
+    /**
+     * Get method that returns all temperature extra fee rules from database
+     * @return status code 200 ok, list of rules
+     */
     @GetMapping("/temp/getRules")
     public ResponseEntity<List<TemperatureExtraFeeRule>> getAllTemperatureExtraFeeRules() {
         List<TemperatureExtraFeeRule> temperatureExtraFeeRules = temperatureExtraFeeRuleService.getAllTemperatureExtraFeeRules();
         return new ResponseEntity<>(temperatureExtraFeeRules, HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param temperatureExtraFeeRule new rule content to be inserted to db
+     * @return
+     */
     @PostMapping("/temp/postRule")
     public ResponseEntity<TemperatureExtraFeeRule> createTemperatureExtraFeeRule(@RequestBody TemperatureExtraFeeRule temperatureExtraFeeRule) {
         logger.info("Post request received");
@@ -39,8 +48,13 @@ public class TemperatureExtraFeeRuleController {
                 .body(createdTemperatureExtraFeeRule);
     }
 
+    /**
+     * delete method for deleting a rule
+     * @param id corresponding rule id (type long)
+     * @return indication that request was successfully processed, no content in response body
+     */
     @DeleteMapping("/temp/delete/{id}")
-    public ResponseEntity<Void> deleteTemperatureExtraFeeRule(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTemperatureExtraFeeRule(@PathVariable("id") long id) {
         logger.info("delete request received");
         temperatureExtraFeeRuleService.deleteTemperatureExtraFeeRule(id);
         return ResponseEntity.noContent().build();
