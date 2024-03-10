@@ -33,7 +33,7 @@ public class TemperatureExtraFeeRuleController {
     /**
      *
      * @param temperatureExtraFeeRule new rule content to be inserted to db
-     * @return
+     * @return status code 201 created, uri of new resource, content of new rule
      */
     @PostMapping("/temp/postRule")
     public ResponseEntity<TemperatureExtraFeeRule> createTemperatureExtraFeeRule(@RequestBody TemperatureExtraFeeRule temperatureExtraFeeRule) {

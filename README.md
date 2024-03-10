@@ -1,9 +1,10 @@
-# Delivery Fee Calculator
+# Delivery Fee Calculator with REST interface for managing rules
 
 Developed according to Java Programming Trial Task by Fujitsu Estonia 2024 by Mattias Kimst
 
 ## Overview
-The Delivery Fee Calculator is a sub-functionality of a food delivery application that calculates the delivery fee for food couriers based on defined business rules such as regional base fee, vehicle type, and weather conditions. 
+The Delivery Fee Calculator is a sub-functionality of a food delivery application that calculates the delivery fee for food couriers based on defined business rules such as regional base fee, vehicle type, and weather conditions.
+This version implements bonus tasks so that rules for base fees and extra fees could be managed (CRUD) through the REST interface
 
 ## Key Features
 1. **Database Management**: Stores and manages weather data, including information such as station name, WMO code, air temperature, wind speed, weather phenomenon, and timestamp in H2 database (data directory in  project structure).
@@ -42,41 +43,8 @@ http://localhost:8080/calculateDeliveryFee?stationName=<city>&vehicleType=<vehic
 In order to run Junit test, make sure that "Generic H2 (Server)" option is selected from H2 console
 
 ## Business rules
-Business rules to calculate regional base fee (RBF):
-- In case City = Tallinn and:
-- Vehicle type = Car, then RBF = 4 €
-- Vehicle type = Scooter, then RBF = 3,5 €
-- Vehicle type = Bike, then RBF = 3 €
-- In case City = Tartu and:
-- Vehicle type = Car, then RBF = 3,5 €
-- Vehicle type = Scooter, then RBF = 3 €
-- Vehicle type = Bike, then RBF = 2,5 €
-- In case City = Pärnu and:
-- Vehicle type = Car, then RBF = 3 €
-- Vehicle type = Scooter, then RBF = 2,5 €
-- Vehicle type = Bike, then RBF = 2 €
-
-Business rules to calculate extra fees for weather conditions:
-
-Extra fee based on air temperature (ATEF) in a specific city is paid in case Vehicle type =
-Scooter or Bike and:
-- Air temperature is less than -10̊ C, then ATEF = 1 €
-- Air temperature is between -10̊ C and 0̊ C, then ATEF = 0,5 €
-
-Extra fee based on wind speed (WSEF) in a specific city is paid in case Vehicle type = Bike
-and:
-
-- Wind speed is between 10 m/s and 20 m/s, then WSEF = 0,5 €
-- In case of wind speed is greater than 20 m/s, then the error message “Usage of selected vehicle
-type is forbidden” has to be given
-
-Extra fee based on weather phenomenon (WPEF) in a specific city is paid in case Vehicle
-type = Scooter or Bike and:
-
-- Weather phenomenon is related to snow or sleet, then WPEF = 1 €
-- Weather phenomenon is related to rain, then WPEF = 0,5 €
-- In case the weather phenomenon is glaze, hail, or thunder, then the error message “Usage of
-selected vehicle type is forbidden” has to be given
+in this version of application you can add and delete business rules yourself using POST and DELETE methods. Simple forms for submitting those
+requests are available on the welcome page http://localhost:8080
 
 
 

@@ -20,12 +20,21 @@ public class WeatherPhenomenonExtraFeeRuleController {
     @Autowired
     private WeatherPhenomenonExtraFeeRuleService weatherPhenomenonExtraFeeRuleService;
 
+    /**
+     * Get method that returns all phenomenon extra fee rules from database
+     * @return status code 200 ok, list of rules
+     */
     @GetMapping("/phenomenon/getRules")
     public ResponseEntity<List<WeatherPhenomenonExtraFeeRule>> getAllWeatherPhenomenonExtraFeeRules() {
         List<WeatherPhenomenonExtraFeeRule> weatherPhenomenonExtraFeeRules = weatherPhenomenonExtraFeeRuleService.getAllWeatherPhenomenonExtraFeeRules();
         return new ResponseEntity<>(weatherPhenomenonExtraFeeRules, HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param weatherPhenomenonExtraFeeRule new rule content to be inserted to db
+     * @return status code 201 created, uri of new resource, content of new rule
+     */
     @PostMapping("/phenomenon/postRule")
     public ResponseEntity<WeatherPhenomenonExtraFeeRule> createWeatherPhenomenonExtraFeeRule(@RequestBody WeatherPhenomenonExtraFeeRule weatherPhenomenonExtraFeeRule) {
         logger.info("Post request received");
@@ -38,6 +47,11 @@ public class WeatherPhenomenonExtraFeeRuleController {
                 .body(createdWeatherPhenomenonExtraFeeRule);
     }
 
+    /**
+     * delete method for deleting a rule
+     * @param id corresponding rule id (type long)
+     * @return indication that request was successfully processed, no content in response body
+     */
     @DeleteMapping("/phenomenon/delete/{id}")
     public ResponseEntity<Void> deleteWeatherPhenomenonExtraFeeRule(@PathVariable("id") long id) {
         logger.info("delete request received");

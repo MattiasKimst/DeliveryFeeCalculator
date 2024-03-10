@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class WeatherPhenomenonExtraFeeRuleService {
@@ -18,14 +17,21 @@ public class WeatherPhenomenonExtraFeeRuleService {
         this.weatherPhenomenonExtraFeeRuleRepository = weatherPhenomenonExtraFeeRuleRepository;
     }
 
+    /**
+     *
+     * @return a list of all phenomenon extra fee rules in db
+     */
     public List<WeatherPhenomenonExtraFeeRule> getAllWeatherPhenomenonExtraFeeRules() {
         return weatherPhenomenonExtraFeeRuleRepository.findAll();
     }
 
-    public Optional<WeatherPhenomenonExtraFeeRule> getWeatherPhenomenonExtraFeeRuleById(Long id) {
-        return weatherPhenomenonExtraFeeRuleRepository.findById(id);
-    }
-
+    /**
+     * a method for adding a new phenomenon extra fee rule to db
+     * @param vehicle corresponding vehicle
+     * @param phenomenon phenomenon name
+     * @param fee corresponding fee
+     * @return save a new rule to db
+     */
     public WeatherPhenomenonExtraFeeRule createWeatherPhenomenonExtraFeeRule(String vehicle, String phenomenon, double fee) {
         WeatherPhenomenonExtraFeeRule weatherPhenomenonExtraFeeRule = new WeatherPhenomenonExtraFeeRule();
         weatherPhenomenonExtraFeeRule.setVehicle(vehicle);
@@ -34,12 +40,15 @@ public class WeatherPhenomenonExtraFeeRuleService {
         return weatherPhenomenonExtraFeeRuleRepository.save(weatherPhenomenonExtraFeeRule);
     }
 
-    public boolean deleteWeatherPhenomenonExtraFeeRule(Long id) {
+    /**
+     * a method for deleting a phenomenon rule
+     * @param id id of a rule we want to delete
+     */
+    public void deleteWeatherPhenomenonExtraFeeRule(Long id) {
         if (!weatherPhenomenonExtraFeeRuleRepository.existsById(id)) {
             // Return false if the rule with the given ID does not exist
-            return false;
+            return;
         }
         weatherPhenomenonExtraFeeRuleRepository.deleteById(id);
-        return true;
     }
 }

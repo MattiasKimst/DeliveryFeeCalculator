@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BaseFeeRuleService {
@@ -23,14 +22,23 @@ public class BaseFeeRuleService {
     }
 
 
+    /**
+     * method for getting a list of all base fee rules in db
+     * @return list with all base fee rules
+     */
     public List<BaseFeeRule> getAllBaseFeeRules() {
         return baseFeeRuleRepository.findAll();
     }
 
-    public Optional<BaseFeeRule> getBaseFeeRuleById(Long id) {
-        return baseFeeRuleRepository.findById(id);
-    }
 
+    /**
+     * a method for inserting a new base fee rule to db
+     * @param city city
+     * @param vehicle vehicle
+     * @param station corresponding weather station name in ilmateenistus api
+     * @param fee fee
+     * @return save the rule with provided data in db
+     */
     public BaseFeeRule createBaseFeeRule(String city, String vehicle, String station, double fee) {
         BaseFeeRule baseFeeRule = new BaseFeeRule();
         baseFeeRule.setCity(city);
@@ -40,14 +48,17 @@ public class BaseFeeRuleService {
         return baseFeeRuleRepository.save(baseFeeRule);
     }
 
-
-    public boolean deleteBaseFeeRule(Long id) {
+    /**
+     * a method for deleting a rule from db
+     *
+     * @param id id of a rule we want to delete
+     */
+    public void deleteBaseFeeRule(Long id) {
         logger.info("deleteBaseRule with id "+id);
         if (!baseFeeRuleRepository.existsById(id)) {
-            // case where the rule with the given ID does not exist
-            return false;
+            // case where the rule with the given ID does not exist, we simply exit
+            return;
         }
-        baseFeeRuleRepository.deleteById(id);
-        return true;
+        baseFeeRuleRepository.deleteById(id); //if exists we delete the rule
     }
 }

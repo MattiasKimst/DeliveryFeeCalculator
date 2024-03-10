@@ -75,9 +75,9 @@ public class DeliveryFeeCalculatorService {
 
     /**
      * Calculates the base delivery fee based on the given city and vehicle type
-     * according to the defined business rules
+     * according to the rules fetched from db
      *
-     * @param city        The name of the city for delivery.
+     * @param stationName    The name of the weather station corresponding to the city
      * @param vehicleType The type of vehicle used for delivery.
      * @return The calculated base delivery fee.
      */
@@ -85,13 +85,13 @@ public class DeliveryFeeCalculatorService {
     private BaseFeeRuleRepository baseFeeRuleRepository;
 
     public double calculateBaseFee(String stationName, String vehicleType) {
+
         // Retrieve all base fee rules from the database
         List<BaseFeeRule> baseFeeRules = baseFeeRuleRepository.findAll();
-
         // Iterate through the rules and find the one that matches the city and vehicle type
         for (BaseFeeRule rule : baseFeeRules) { //lowercase both comparable strings
             if (rule.getStation().equalsIgnoreCase(stationName) && rule.getVehicle().equalsIgnoreCase(vehicleType)) {
-                return rule.getFee();
+                return rule.getFee();//there might be more than one suitable rule, we use only the first one for calculation
             }
         }
         // If no matching rule is found, throw an exception
@@ -102,7 +102,7 @@ public class DeliveryFeeCalculatorService {
 
     /**
      * Calculates the extra delivery fees based on the given weather data and vehicle type
-     * according to the defined business rules
+     * according to the business rules in db
      *
      * @param weatherData The weather data used for calculating extra fees.
      * @param vehicleType The type of vehicle used for delivery.
@@ -147,8 +147,6 @@ public class DeliveryFeeCalculatorService {
                 extraFee += rule.getFee();
             }
         }
-
-
 
         return extraFee;
 }

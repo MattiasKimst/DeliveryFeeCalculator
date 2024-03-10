@@ -178,6 +178,8 @@
 
 </div>
 <script>
+
+    //basefee forms logic
     document.getElementById("baseFeeRuleForm").addEventListener("submit", function (event) {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -213,6 +215,32 @@
                 alert("An error occurred. Please try again.");
             });
     });
+    document.getElementById("deleteBaseFeeRuleForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const ruleId = formData.get("ruleId");
+
+        fetch(`http://localhost:8080/base/delete/${ruleId}`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .then(data => {
+                console.log(data);
+                alert("Base fee rule deleted successfully!");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+    });
+
+
+
+    //temperature fee forms logic
     document.getElementById("temperatureRuleForm").addEventListener("submit", function (event) {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -248,28 +276,7 @@
                 alert("An error occurred. Please try again.");
             });
     });
-    document.getElementById("deleteBaseFeeRuleForm").addEventListener("submit", function (event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const ruleId = formData.get("ruleId");
 
-        fetch(`http://localhost:8080/base/delete/${ruleId}`, {
-            method: 'DELETE',
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-            })
-            .then(data => {
-                console.log(data);
-                alert("Base fee rule deleted successfully!");
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert("An error occurred. Please try again.");
-            });
-    });
     document.getElementById("deleteTemperatureRuleForm").addEventListener("submit", function (event) {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -292,6 +299,9 @@
                 alert("An error occurred. Please try again.");
             });
     });
+
+
+    //windspeed forms logic
     document.getElementById("windSpeedRuleForm").addEventListener("submit", function (event) {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -327,7 +337,6 @@
                 alert("An error occurred. Please try again.");
             });
     });
-
     document.getElementById("deleteWindSpeedRuleForm").addEventListener("submit", function (event) {
         event.preventDefault();
         const formData = new FormData(event.target);
@@ -351,6 +360,10 @@
             });
     });
 
+
+
+
+    //phenomenon fee forms logic
     document.getElementById("weatherPhenomenonRuleForm").addEventListener("submit", function (event) {
         event.preventDefault();
         const formData = new FormData(event.target);
