@@ -132,6 +132,28 @@
         <input type="number" id="ruleId" name="ruleId" required>
         <input type="submit" value="Delete Rule">
     </form>
+    <h2>Make a POST request for adding a wind speed rule</h2>
+    <form id="windSpeedRuleForm">
+        <label for="vehicle">Vehicle:</label>
+        <input type="text" id="vehicle" name="vehicle" required><br><br>
+        <label for="minWindSpeed">Minimum Wind Speed:</label>
+        <input type="number" id="minWindSpeed" name="minWindSpeed" step="0.01" required><br><br>
+        <label for="maxWindSpeed">Maximum Wind Speed:</label>
+        <input type="number" id="maxWindSpeed" name="maxWindSpeed" step="0.01" required><br><br>
+        <label for="fee">Fee:</label>
+        <input type="number" id="fee" name="fee" step="0.01" required><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <h2><br>Visit http://localhost:8080/wind/getRules to get a list of wind speed extra fee rules <br><br></h2>
+
+    <h2>Make a DELETE request to delete a wind speed rule</h2>
+    <form id="deleteWindSpeedRuleForm">
+        <label for="ruleId">Rule ID:</label>
+        <input type="number" id="ruleId" name="ruleId" required><br><br>
+        <input type="submit" value="Delete Rule">
+    </form>
+
 </div>
 <script>
     document.getElementById("baseFeeRuleForm").addEventListener("submit", function (event) {
@@ -248,6 +270,65 @@
                 alert("An error occurred. Please try again.");
             });
     });
+    document.getElementById("windSpeedRuleForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const vehicle = formData.get("vehicle");
+        const minWindSpeed = formData.get("minWindSpeed");
+        const maxWindSpeed = formData.get("maxWindSpeed");
+        const fee = formData.get("fee");
+
+        fetch('http://localhost:8080/wind/postRule', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                vehicle: vehicle,
+                minWindSpeed: minWindSpeed,
+                maxWindSpeed: maxWindSpeed,
+                fee: fee
+            }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                alert("Wind speed rule added/updated successfully!");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+    });
+
+    document.getElementById("deleteWindSpeedRuleForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const ruleId = formData.get("ruleId");
+
+        fetch(`http://localhost:8080/wind/delete/${ruleId}`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .then(data => {
+                console.log(data);
+                alert("Wind speed rule deleted successfully!");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+    });
+
 
 
 

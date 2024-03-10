@@ -3,9 +3,11 @@ package com.example.deliveryfeecalculator.service;
 import com.example.deliveryfeecalculator.model.BaseFeeRule;
 import com.example.deliveryfeecalculator.model.TemperatureExtraFeeRule;
 import com.example.deliveryfeecalculator.model.WeatherData;
+import com.example.deliveryfeecalculator.model.WindSpeedExtraFeeRule;
 import com.example.deliveryfeecalculator.repository.BaseFeeRuleRepository;
 import com.example.deliveryfeecalculator.repository.TemperatureExtraFeeRuleRepository;
 import com.example.deliveryfeecalculator.repository.WeatherDataRepository;
+import com.example.deliveryfeecalculator.repository.WindSpeedExtraFeeRuleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +30,13 @@ public class DeliveryFeeCalculatorService {
     /**
      * Calculates the delivery fee based on the given city and vehicle type.
      *
-     * @param city        The name of the city for delivery.
+     * @param stationName The name of the weatherStation near city of delivery.
      * @param vehicleType The type of vehicle used for delivery.
      * @param date        Additional parameter, by default null, if provided correctly, fee for that time in past will be calculated
      * @return The calculated delivery fee.
      */
 
-    public double calculateDeliveryFee(String city, String vehicleType, String date) {
+    public double calculateDeliveryFee(String stationName, String vehicleType, String date) {
 
         LocalDateTime dateTime = null;
         //if date isn't null, then date was provided in request
@@ -49,13 +51,6 @@ public class DeliveryFeeCalculatorService {
                 throw new IllegalArgumentException("Invalid input for datetime");
             }
         }
-        //The city names differ from station names that we use in db, to make a query we need to map cities to station names
-        String stationName = switch (city) {
-            case "Tallinn" -> "Tallinn-Harku";
-            case "Tartu" -> "Tartu-Tõravere";
-            case "Pärnu" -> "Pärnu";
-            default -> throw new IllegalArgumentException("Invalid input for city");
-        };
 
 
         WeatherData weatherData = null;
@@ -71,7 +66,7 @@ public class DeliveryFeeCalculatorService {
         }
 
         //calculate base fee
-        double baseFee = calculateBaseFee(city, vehicleType);
+        double baseFee = calculateBaseFee(stationName, vehicleType);
         logger.info("calculated base fee: " + baseFee);
 
         //calculate extra fee
@@ -95,13 +90,13 @@ public class DeliveryFeeCalculatorService {
     @Autowired
     private BaseFeeRuleRepository baseFeeRuleRepository;
 
-    public double calculateBaseFee(String city, String vehicleType) {
+    public double calculateBaseFee(String stationName, String vehicleType) {
         // Retrieve all base fee rules from the database
         List<BaseFeeRule> baseFeeRules = baseFeeRuleRepository.findAll();
 
         // Iterate through the rules and find the one that matches the city and vehicle type
-        for (BaseFeeRule rule : baseFeeRules) {
-            if (rule.getCity().equalsIgnoreCase(city) && rule.getVehicle().equalsIgnoreCase(vehicleType)) {
+        for (BaseFeeRule rule : baseFeeRules) { //lowercase both comparable strings
+            if (rule.getStation().equalsIgnoreCase(stationName) && rule.getVehicle().equalsIgnoreCase(vehicleType)) {
                 return rule.getFee();
             }
         }
@@ -123,6 +118,9 @@ public class DeliveryFeeCalculatorService {
 
     @Autowired
     private TemperatureExtraFeeRuleRepository temperatureExtraFeeRuleRepository;
+    @Autowired
+    private WindSpeedExtraFeeRuleRepository windSpeedExtraFeeRuleRepository;
+
     public double calculateExtraFees(WeatherData weatherData, String vehicleType) {
 
         //we will increase extraFee by each fulfilled condition defined in business rules
@@ -133,43 +131,35 @@ public class DeliveryFeeCalculatorService {
             if (rule.getVehicle().equals(vehicleType) && weatherData.getAirTemperature() >= rule.getMinTemperature() && weatherData.getAirTemperature() <= rule.getMaxTemperature()) {
                 extraFee += rule.getFee();
             }
-
-
-            // Extra fee based on wind speed (WSEF) in a specific city is paid in case Vehicle type = Bike
-            double windSpeed = weatherData.getWindSpeed();
-            logger.info("Wind speed " + windSpeed);
-            if ("Bike".equals(vehicleType)) {
-                //Wind speed is between 10 m/s and 20 m/s, then WSEF = 0,5 €
-                if (windSpeed >= 10 && windSpeed <= 20) {
-                    extraFee += 0.5;
-                }
-                //In case of wind speed is greater than 20 m/s, then the error message “Usage of selected vehicle
-                //type is forbidden” has to be given
-                else if (windSpeed > 20) {
-                    throw new IllegalArgumentException("Usage of selected vehicle type is forbidden");
-                }
-            }
-
-
-            // Extra fee based on weather phenomenon (WPEF) in a specific city is paid in case Vehicle
-            //type = Scooter or Bike
-            String weatherPhenomenon = weatherData.getWeatherPhenomenon();
-            logger.info("Weather phenomenon " + weatherPhenomenon);
-            //Weather phenomenon is related to snow or sleet, then WPEF = 1 €
-            if (weatherPhenomenon.toLowerCase().contains("snow") || weatherPhenomenon.toLowerCase().contains("sleet")) {
-                extraFee += 1.0;
-            }
-            //Weather phenomenon is related to rain, then WPEF = 0,5 €
-            else if (weatherPhenomenon.toLowerCase().contains("rain")) {
-                extraFee += 0.5;
-            }
-            //In case the weather phenomenon is glaze, hail, or thunder, then the error message “Usage of
-            //selected vehicle type is forbidden” has to be given
-            else if (weatherPhenomenon.toLowerCase().contains("glaze") || weatherPhenomenon.toLowerCase().contains("hail") || weatherPhenomenon.toLowerCase().contains("thunder")) {
-                throw new IllegalArgumentException("Usage of selected vehicle type is forbidden");
+        }
+        List<WindSpeedExtraFeeRule> windSpeedRules = windSpeedExtraFeeRuleRepository.findAll();
+        for (WindSpeedExtraFeeRule rule : windSpeedRules) {
+            if (rule.getVehicle().equals(vehicleType) && weatherData.getWindSpeed() >= rule.getMinWindSpeed() && weatherData.getWindSpeed() <= rule.getMaxWindSpeed()) {
+                extraFee += rule.getFee();
             }
         }
 
+
+
+        // Extra fee based on weather phenomenon (WPEF) in a specific city is paid in case Vehicle
+        //type = Scooter or Bike
+        String weatherPhenomenon = weatherData.getWeatherPhenomenon();
+        logger.info("Weather phenomenon " + weatherPhenomenon);
+        //Weather phenomenon is related to snow or sleet, then WPEF = 1 €
+        if (weatherPhenomenon.toLowerCase().contains("snow") || weatherPhenomenon.toLowerCase().contains("sleet")) {
+            extraFee += 1.0;
+        }
+        //Weather phenomenon is related to rain, then WPEF = 0,5 €
+        else if (weatherPhenomenon.toLowerCase().contains("rain")) {
+            extraFee += 0.5;
+        }
+        //In case the weather phenomenon is glaze, hail, or thunder, then the error message “Usage of
+        //selected vehicle type is forbidden” has to be given
+        else if (weatherPhenomenon.toLowerCase().contains("glaze") || weatherPhenomenon.toLowerCase().contains("hail") || weatherPhenomenon.toLowerCase().contains("thunder")) {
+            throw new IllegalArgumentException("Usage of selected vehicle type is forbidden");
+        }
+
+
         return extraFee;
-    }
+}
 }
