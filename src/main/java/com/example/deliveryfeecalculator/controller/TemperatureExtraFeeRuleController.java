@@ -41,6 +41,7 @@ public class TemperatureExtraFeeRuleController {
 
     @DeleteMapping("/temp/delete/{id}")
     public ResponseEntity<Void> deleteTemperatureExtraFeeRule(@PathVariable Long id) {
+        logger.info("delete request received");
         temperatureExtraFeeRuleService.deleteTemperatureExtraFeeRule(id);
         return ResponseEntity.noContent().build();
     }
