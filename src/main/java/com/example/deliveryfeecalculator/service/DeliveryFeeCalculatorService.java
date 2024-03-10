@@ -1,13 +1,7 @@
 package com.example.deliveryfeecalculator.service;
 
-import com.example.deliveryfeecalculator.model.BaseFeeRule;
-import com.example.deliveryfeecalculator.model.TemperatureExtraFeeRule;
-import com.example.deliveryfeecalculator.model.WeatherData;
-import com.example.deliveryfeecalculator.model.WindSpeedExtraFeeRule;
-import com.example.deliveryfeecalculator.repository.BaseFeeRuleRepository;
-import com.example.deliveryfeecalculator.repository.TemperatureExtraFeeRuleRepository;
-import com.example.deliveryfeecalculator.repository.WeatherDataRepository;
-import com.example.deliveryfeecalculator.repository.WindSpeedExtraFeeRuleRepository;
+import com.example.deliveryfeecalculator.model.*;
+import com.example.deliveryfeecalculator.repository.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,18 +114,24 @@ public class DeliveryFeeCalculatorService {
     private TemperatureExtraFeeRuleRepository temperatureExtraFeeRuleRepository;
     @Autowired
     private WindSpeedExtraFeeRuleRepository windSpeedExtraFeeRuleRepository;
+    @Autowired
+    private WeatherPhenomenonExtraFeeRuleRepository weatherPhenomenonExtraFeeRuleRepository;
 
     public double calculateExtraFees(WeatherData weatherData, String vehicleType) {
 
         //we will increase extraFee by each fulfilled condition defined in business rules
         double extraFee = 0.0;
 
+        //iterate over temperature extra fee rules, if rule matches, increase extraFee by defined fee
+        //may match many rules
         List<TemperatureExtraFeeRule> temperatureRules = temperatureExtraFeeRuleRepository.findAll();
         for (TemperatureExtraFeeRule rule : temperatureRules) {
             if (rule.getVehicle().equals(vehicleType) && weatherData.getAirTemperature() >= rule.getMinTemperature() && weatherData.getAirTemperature() <= rule.getMaxTemperature()) {
                 extraFee += rule.getFee();
             }
         }
+        //iterate over windspeed extra fee rules, if rule matches, increase extraFee by defined fee
+        //may match many rules
         List<WindSpeedExtraFeeRule> windSpeedRules = windSpeedExtraFeeRuleRepository.findAll();
         for (WindSpeedExtraFeeRule rule : windSpeedRules) {
             if (rule.getVehicle().equals(vehicleType) && weatherData.getWindSpeed() >= rule.getMinWindSpeed() && weatherData.getWindSpeed() <= rule.getMaxWindSpeed()) {
@@ -139,25 +139,15 @@ public class DeliveryFeeCalculatorService {
             }
         }
 
+        //iterate over phenomenon extra fee rules, if rule matches, increase extraFee by defined fee
+        //may match many rules
+        List<WeatherPhenomenonExtraFeeRule> phenomenonRules = weatherPhenomenonExtraFeeRuleRepository.findAll();
+        for (WeatherPhenomenonExtraFeeRule rule : phenomenonRules) {
+            if (rule.getVehicle().equals(vehicleType) && weatherData.getWeatherPhenomenon().toLowerCase().contains(rule.getPhenomenon().toLowerCase())) {
+                extraFee += rule.getFee();
+            }
+        }
 
-
-        // Extra fee based on weather phenomenon (WPEF) in a specific city is paid in case Vehicle
-        //type = Scooter or Bike
-        String weatherPhenomenon = weatherData.getWeatherPhenomenon();
-        logger.info("Weather phenomenon " + weatherPhenomenon);
-        //Weather phenomenon is related to snow or sleet, then WPEF = 1 €
-        if (weatherPhenomenon.toLowerCase().contains("snow") || weatherPhenomenon.toLowerCase().contains("sleet")) {
-            extraFee += 1.0;
-        }
-        //Weather phenomenon is related to rain, then WPEF = 0,5 €
-        else if (weatherPhenomenon.toLowerCase().contains("rain")) {
-            extraFee += 0.5;
-        }
-        //In case the weather phenomenon is glaze, hail, or thunder, then the error message “Usage of
-        //selected vehicle type is forbidden” has to be given
-        else if (weatherPhenomenon.toLowerCase().contains("glaze") || weatherPhenomenon.toLowerCase().contains("hail") || weatherPhenomenon.toLowerCase().contains("thunder")) {
-            throw new IllegalArgumentException("Usage of selected vehicle type is forbidden");
-        }
 
 
         return extraFee;

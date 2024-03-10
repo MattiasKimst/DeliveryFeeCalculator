@@ -91,7 +91,8 @@
             "http://localhost:8080/calculateDeliveryFee?stationName=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt&amp;datetime=&lt;yyyy-MM-dd'T'HH:mm:ss&gt"<br><br>
         </li>
         <li>The H2 database console could be accessed at <a href="http://localhost:8080/h2-console">http://localhost:8080/h2-console</a>.
-            Login credentials are in <code>application.properties</code> file.</li>
+            Login credentials are in <code>application.properties</code> file.
+        </li>
     </ol>
     <h2>Make a POST request for adding a base fee rule</h2>
     <form id="baseFeeRuleForm">
@@ -153,6 +154,27 @@
         <input type="number" id="ruleId" name="ruleId" required><br><br>
         <input type="submit" value="Delete Rule">
     </form>
+    <h2>Make a POST request for adding a weather phenomenon rule</h2>
+    <form id="weatherPhenomenonRuleForm">
+        <label for="vehicle">Vehicle:</label>
+        <input type="text" id="vehicle" name="vehicle" required><br><br>
+        <label for="phenomenon">Phenomenon:</label>
+        <input type="text" id="phenomenon" name="phenomenon" required><br><br>
+        <label for="fee">Fee:</label>
+        <input type="number" id="fee" name="fee" step="0.01" required><br><br>
+        <input type="submit" value="Submit">
+    </form>
+
+    <h2><br>Visit http://localhost:8080/phenomenon/getRules to get a list of weather phenomenon extra fee rules <br><br>
+    </h2>
+
+    <h2>Make a DELETE request to delete a weather phenomenon rule</h2>
+    <form id="deletePhenomenonRuleForm">
+        <label for="ruleId">Rule ID:</label>
+        <input type="number" id="ruleId" name="ruleId" required><br><br>
+        <input type="submit" value="Delete Rule">
+    </form>
+
 
 </div>
 <script>
@@ -329,7 +351,62 @@
             });
     });
 
+    document.getElementById("weatherPhenomenonRuleForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const vehicle = formData.get("vehicle");
+        const phenomenon = formData.get("phenomenon");
+        const fee = formData.get("fee");
 
+        fetch('http://localhost:8080/phenomenon/postRule', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                vehicle: vehicle,
+                phenomenon: phenomenon,
+                fee: fee
+            }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                alert("Weather phenomenon rule added/updated successfully!");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+    });
+
+    document.getElementById("deletePhenomenonRuleForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        const formData = new FormData(event.target);
+        const ruleId = formData.get("ruleId");
+
+        fetch(`http://localhost:8080/phenomenon/delete/${ruleId}`, {
+            method: 'DELETE',
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .then(data => {
+                console.log(data);
+                alert("Weather phenomenon rule deleted successfully!");
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+    });
 
 
 </script>
