@@ -164,7 +164,7 @@ class DeliveryFeeCalculatorApplicationTests {
     void testCalculateDeliveryFeeEndpointValidDateTime() {
 
         // Create the URL for the API endpoint, if the server port is 8080
-        String apiUrl = "http://localhost:8080/calculateDeliveryFee?city=Tallinn&vehicleType=Car&datetime=2024-03-09T10:00:00";
+        String apiUrl = "http://localhost:8080/calculateDeliveryFee?city=Tallinn&vehicleType=Car&datetime="+LocalDateTime.now();
 
         // Send a GET request to the endpoint
         ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);

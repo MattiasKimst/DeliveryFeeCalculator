@@ -21,7 +21,7 @@ public class DeliveryFeeCalculatorApplication {
 
     //PostConstruct annotation is to trigger the import process when the application context is initialized.
     @PostConstruct
-    @Scheduled(cron = "15 * * * * *") // import weather data from ilmateenistus on 15th minute every hour
+    @Scheduled(cron = "* 15 * * * *") // import weather data from ilmateenistus on 15th minute every hour
     public void importWeatherDataOnStartup() {
         weatherDataImportService.importWeatherData();
     }
