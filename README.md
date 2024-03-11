@@ -1,6 +1,6 @@
 # Delivery Fee Calculator
 
-Developed according to Java Programming Trial Task by Fujitsu Estonia 2024 by Mattias Kimst
+Developed according to Java Programming Trial Task from Fujitsu Estonia 2024 by Mattias Kimst
 
 ## Overview
 The Delivery Fee Calculator is a sub-functionality of a food delivery application that calculates the delivery fee for food couriers based on defined business rules such as regional base fee, vehicle type, and weather conditions. 
@@ -42,6 +42,8 @@ http://localhost:8080/calculateDeliveryFee?city=<city>&vehicleType=<vehicle>
 In order to run Junit test, make sure that "Generic H2 (Server)" option is selected from H2 console
 
 ## Business rules
+
+Business rules are hard-coded in this version, bonus branch of this project includes functionality to store business rules in database and modify them using POST and DELETE requests.
 Business rules to calculate regional base fee (RBF):
 - In case City = Tallinn and:
 - Vehicle type = Car, then RBF = 4 €
@@ -78,6 +80,9 @@ type = Scooter or Bike and:
 - In case the weather phenomenon is glaze, hail, or thunder, then the error message “Usage of
 selected vehicle type is forbidden” has to be given
 
+## Contact
+In case of any questions or problems regarding this project, feel free to conatct mattias.kimst@mail.ee
+ 
 
 
 
