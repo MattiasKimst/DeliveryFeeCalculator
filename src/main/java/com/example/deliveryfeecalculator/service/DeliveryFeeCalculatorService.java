@@ -24,13 +24,21 @@ public class DeliveryFeeCalculatorService {
     /**
      * Calculates the delivery fee based on the given city and vehicle type.
      *
-     * @param stationName The name of the weatherStation near city of delivery.
+     * @param city The name of the city of delivery.
      * @param vehicleType The type of vehicle used for delivery.
      * @param date        Additional parameter, by default null, if provided correctly, fee for that time in past will be calculated
      * @return The calculated delivery fee.
      */
 
-    public double calculateDeliveryFee(String stationName, String vehicleType, String date) {
+    public double calculateDeliveryFee(String city, String vehicleType, String date) {
+
+        //The city names differ from station names that we use in weather db, to make a query we need to map cities to station names
+        String stationName = switch (city) {
+            case "Tallinn" -> "Tallinn-Harku";
+            case "Tartu" -> "Tartu-Tõravere";
+            case "Pärnu" -> "Pärnu";
+            default -> throw new IllegalArgumentException("Invalid input for city");
+        };
 
         LocalDateTime dateTime = null;
         //if date isn't null, then date was provided in request

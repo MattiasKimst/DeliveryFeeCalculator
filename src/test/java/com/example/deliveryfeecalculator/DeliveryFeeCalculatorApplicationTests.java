@@ -22,7 +22,9 @@ import org.springframework.test.context.ContextConfiguration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-
+/**
+ * TODO test adding, deleting a rule and calculating fee according to rules added
+ */
 @SpringBootTest
 class DeliveryFeeCalculatorApplicationTests {
 

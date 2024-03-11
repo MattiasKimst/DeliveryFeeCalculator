@@ -78,7 +78,7 @@
             You
             can test invalid input as well, which results in a response containing corresponding error message and
             null
-            value for fee. <br> <br>URL: "http://localhost:8080/calculateDeliveryFee?stationName=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt"<br><br>
+            value for fee. <br> <br>URL: "http://localhost:8080/calculateDeliveryFee?city=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt"<br><br>
         </li>
         <li>To make a GET request with an optional datetime parameter, replace <code>&lt;city&gt;</code>,
             <code>&lt;vehicle&gt;</code>, and <code>&lt;yyyy-MM-dd'T'HH:mm:ss&gt;</code> with one of the cities
@@ -88,7 +88,7 @@
             in the provided format like 2024-03-09T10:00:00. In case of an invalid date format, a corresponding
             error
             message will be provided in the response. <br> <br>URL:
-            "http://localhost:8080/calculateDeliveryFee?stationName=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt&amp;datetime=&lt;yyyy-MM-dd'T'HH:mm:ss&gt"<br><br>
+            "http://localhost:8080/calculateDeliveryFee?city=&lt;city&gt;&amp;vehicleType=&lt;vehicle&gt&amp;datetime=&lt;yyyy-MM-dd'T'HH:mm:ss&gt"<br><br>
         </li>
         <li>The H2 database console could be accessed at <a href="http://localhost:8080/h2-console">http://localhost:8080/h2-console</a>.
             Login credentials are in <code>application.properties</code> file.

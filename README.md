@@ -1,6 +1,6 @@
-# Delivery Fee Calculator with REST interface for managing rules
+# BONUS Delivery Fee Calculator with REST interface for managing rules 
 
-Developed according to Java Programming Trial Task by Fujitsu Estonia 2024 by Mattias Kimst
+Developed according to Java Programming Trial Task from Fujitsu Estonia 2024 by Mattias Kimst
 
 ## Overview
 The Delivery Fee Calculator is a sub-functionality of a food delivery application that calculates the delivery fee for food couriers based on defined business rules such as regional base fee, vehicle type, and weather conditions.
@@ -38,7 +38,7 @@ H2 database console could be accessed at http://localhost:8080/h2-console login 
 To make a get request, replace < city > and < vehicle > which you want to calculate the fee for with one of the cities from valid input space {"Tallinn","Tartu","Pärnu"} 
 and a vehicle from list {"Car","Scooter","Bike"}. You can test invalid input aswell, which results in response containing
 corresponding error message and null value for fee.
-http://localhost:8080/calculateDeliveryFee?stationName=<city>&vehicleType=<vehicle>
+http://localhost:8080/calculateDeliveryFee?city=<city>&vehicleType=<vehicle>
 
 In order to run Junit test, make sure that "Generic H2 (Server)" option is selected from H2 console
 
